@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="147.0" prefWidth="470.0" stylesheets="@../css/MainStyle.css" xmlns="http://javafx.com/javafx/1.8.0.191" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.sebphil.renderer.controllers.ImpSceneController">
+   <children>
+      <Label id="title" layoutX="24.0" layoutY="16.0" text="import scene" />
+      <Separator layoutX="24.0" layoutY="51.0" prefWidth="200.0" />
+      <Label id="text1" layoutX="24.0" layoutY="66.0" text="path:" />
+      <TextField fx:id="pathField" layoutX="83.0" layoutY="63.0" prefHeight="26.0" prefWidth="298.0" />
+      <Button fx:id="browseButton" layoutX="392.0" layoutY="63.0" mnemonicParsing="false" onAction="#browse" text="browse" />
+      <ProgressBar fx:id="progressBar" layoutX="83.0" layoutY="99.0" prefHeight="1.0" prefWidth="298.0" />
+      <Button id="importButton" fx:id="importButton" layoutX="394.0" layoutY="96.0" mnemonicParsing="false" onAction="#importScene" text="import" />
+      <Label fx:id="errorLab" layoutX="83.0" layoutY="121.0" prefHeight="17.0" prefWidth="298.0" text="ERROR" textFill="#ff6f6f" />
+   </children>
+</AnchorPane>

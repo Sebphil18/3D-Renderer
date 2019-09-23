@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="506.0" prefWidth="795.0" stylesheets="@../css/MainStyle.css" xmlns="http://javafx.com/javafx/1.8.0.191" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.sebphil.renderer.controllers.NoiseController">
+   <children>
+      <Label id="title" layoutX="14.0" layoutY="14.0" text="Noise-Generator">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <Separator layoutX="14.0" layoutY="49.0" prefHeight="12.0" prefWidth="288.0" />
+      <Pane fx:id="canvasPane" layoutX="430.0" layoutY="84.0" prefHeight="351.0" prefWidth="351.0" AnchorPane.bottomAnchor="71.0" AnchorPane.leftAnchor="430.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="84.0" />
+      <Slider fx:id="scaleXSlider" layoutX="430.0" layoutY="443.0" max="351.0" min="1.0" prefHeight="16.0" prefWidth="351.0" value="351.0" AnchorPane.bottomAnchor="47.0" AnchorPane.leftAnchor="430.0" AnchorPane.rightAnchor="14.0" />
+      <Slider fx:id="scaleYSlider" layoutX="398.0" layoutY="84.0" max="351.0" min="1.0" orientation="VERTICAL" prefHeight="351.0" prefWidth="16.0" value="1.0" AnchorPane.bottomAnchor="71.0" AnchorPane.topAnchor="84.0" />
+      <Slider fx:id="resSlider" layoutX="430.0" layoutY="459.0" min="1.0" prefHeight="16.0" prefWidth="351.0" value="50.0" AnchorPane.bottomAnchor="31.0" AnchorPane.leftAnchor="430.0" AnchorPane.rightAnchor="14.0" />
+      <Label id="text3" alignment="CENTER" layoutX="579.0" layoutY="475.0" text="resolution" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="579.0" AnchorPane.rightAnchor="162.0" />
+      <Slider fx:id="freqSlider" layoutX="56.0" layoutY="99.0" max="2.0" prefHeight="12.0" prefWidth="200.0" />
+      <TextField id="valField" fx:id="freqMinField" alignment="CENTER_RIGHT" layoutX="14.0" layoutY="92.0" prefHeight="26.0" prefWidth="42.0" promptText="min" />
+      <TextField id="valField" fx:id="freqMaxField" layoutX="258.0" layoutY="92.0" prefHeight="26.0" prefWidth="42.0" promptText="max" />
+      <Label id="text2" layoutX="129.0" layoutY="84.0" text="Frequency" />
+      <TextField id="valField" fx:id="freqValField" alignment="CENTER" layoutX="77.0" layoutY="105.0" prefHeight="26.0" prefWidth="159.0" promptText="value" />
+      <Slider fx:id="amplSlider" layoutX="56.0" layoutY="153.0" max="2.0" prefHeight="12.0" prefWidth="200.0" />
+      <TextField id="valField" fx:id="amplMinField" alignment="CENTER_RIGHT" layoutX="14.0" layoutY="146.0" prefHeight="26.0" prefWidth="42.0" promptText="min" />
+      <TextField id="valField" fx:id="amplMaxField" layoutX="258.0" layoutY="146.0" prefHeight="26.0" prefWidth="42.0" promptText="max" />
+      <Label id="text2" layoutX="129.0" layoutY="138.0" text="Amplitude" />
+      <TextField id="valField" fx:id="amplValField" alignment="CENTER" layoutX="79.0" layoutY="159.0" prefHeight="26.0" prefWidth="159.0" promptText="value" />
+      <Label id="text2" layoutX="21.0" layoutY="215.0" text="Layers:" />
+      <TextField id="numField" fx:id="layersField" layoutX="156.0" layoutY="210.0" prefHeight="26.0" prefWidth="77.0" promptText="number" text="1" />
+      <Label id="text2" layoutX="21.0" layoutY="244.0" text="Frequency-multiplier:" />
+      <TextField id="numField" fx:id="freqMultiField" layoutX="156.0" layoutY="239.0" prefHeight="26.0" prefWidth="77.0" promptText="number" text="1" />
+      <Label id="text2" layoutX="21.0" layoutY="273.0" text="Amplitude-multiplier:" />
+      <TextField id="numField" fx:id="amplMultiField" layoutX="156.0" layoutY="269.0" prefHeight="26.0" prefWidth="77.0" promptText="number" text="1" />
+      <Button id="importButton" fx:id="creNoiseButton" layoutX="14.0" layoutY="371.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="360.0" text="create noise" />
+      <Label id="text2" layoutX="21.0" layoutY="301.0" text="Increasement:" />
+      <TextField id="numField" fx:id="increaField" layoutX="156.0" layoutY="297.0" prefHeight="26.0" prefWidth="77.0" promptText="number" text="1" />
+      <Separator layoutX="16.0" layoutY="354.0" prefHeight="17.0" prefWidth="360.0" />
+      <Separator layoutX="15.0" layoutY="185.0" prefHeight="17.0" prefWidth="360.0" />
+      <CheckBox fx:id="showGridField" layoutX="430.0" layoutY="52.0" mnemonicParsing="false" text="show grid" />
+      <Label id="text2" layoutX="19.0" layoutY="323.0" text="Seed:" />
+      <TextField id="numField" fx:id="seedField" layoutX="156.0" layoutY="319.0" prefHeight="26.0" prefWidth="77.0" promptText="number" text="1" />
+   </children>
+</AnchorPane>
