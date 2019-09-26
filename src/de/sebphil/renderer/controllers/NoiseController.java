@@ -1,28 +1,22 @@
 package de.sebphil.renderer.controllers;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
 
-import de.sebphil.renderer.objects.RenShape;
-import de.sebphil.renderer.objects.RenTriangle;
+import de.sebphil.renderer.objects.RenNoise;
 import de.sebphil.renderer.util.NoiseGenerator2D;
 import de.sebphil.renderer.util.RenUtilities;
 import de.sebphil.renderer.util.ResGrid;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Point3D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 
 public class NoiseController implements Initializable {
 
@@ -72,9 +66,6 @@ public class NoiseController implements Initializable {
 	private TextField amplMultiField;
 
 	@FXML
-	private Button creNoiseButton;
-
-	@FXML
 	private TextField increaField;
 
 	@FXML
@@ -83,7 +74,14 @@ public class NoiseController implements Initializable {
 	@FXML
 	private TextField seedField;
 
-	double increasement = 0.234;
+	@FXML
+	private CheckBox colorCheck;
+
+	private double increment;
+	private long seed;
+	private RenNoise noiseShape;
+	private ResGrid grid;
+	private NoiseGenerator2D noise;
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -91,13 +89,49 @@ public class NoiseController implements Initializable {
 		Canvas canvas = new Canvas(canvasPane.getPrefWidth(), canvasPane.getPrefHeight());
 		GraphicsContext gc = canvas.getGraphicsContext2D();
 
-		ResGrid grid = new ResGrid(canvas.getWidth(), canvas.getHeight(), 100, 100, gc);
+		increment = 0.234;
+		seed = new Random().nextLong();
+		noise = new NoiseGenerator2D(seed);
+		grid = new ResGrid(canvas.getWidth(), canvas.getHeight());
 
-		long seed = new Random().nextLong();
+		if (noiseShape == null) {
 
-		NoiseGenerator2D noise = new NoiseGenerator2D(seed);
+			noiseShape = new RenNoise("noise");
+			noiseShape.setGrid(grid);
+			noiseShape.setNoise(noise);
+			noiseShape.setIncrement(increment);
+			noiseShape.setSeed(seed);
+			noiseShape.getGrid().setUpListener(gc);
 
-		List<RenTriangle> tris = new ArrayList<RenTriangle>();
+			MainController.mainScene.getShapes().add(noiseShape);
+
+		} else {
+
+			grid = noiseShape.getGrid();
+			noise = noiseShape.getNoise();
+			seed = noiseShape.getSeed();
+
+			double frequency = noise.getFrequency();
+			double amplitude = noise.getAmplitude();
+
+			scaleXSlider.setValue(grid.getSizeX().getValue());
+			scaleYSlider.setValue(grid.getSizeY().getValue());
+
+			freqSlider.setValue(frequency);
+			freqSlider.setMax(frequency * 2);
+			freqSlider.setMin(frequency / 2);
+
+			amplSlider.setValue(amplitude);
+			amplSlider.setMax(amplitude * 2);
+			amplSlider.setMin(amplitude / 2);
+
+			layersField.setText(Integer.toString(noise.getLayers()));
+			freqMultiField.setText(Double.toString(noise.getFreqMult()));
+			amplMultiField.setText(Double.toString(noise.getAmplMult()));
+			increaField.setText(Double.toString(noiseShape.getIncrement()));
+			seedField.setText(Long.toString(noiseShape.getSeed()));
+
+		}
 
 		seedField.setText(Long.toString(seed));
 
@@ -113,18 +147,20 @@ public class NoiseController implements Initializable {
 		amplMaxField.setText(Double.toString(amplSlider.getMax()));
 		amplValField.setText(Double.toString(noise.getAmplitude()));
 
-		increaField.setText(Double.toString(increasement));
+		increaField.setText(Double.toString(increment));
 
 		grid.getShowGrid().addListener(e -> {
 			showGridField.setSelected(grid.getShowGrid().getValue());
-			fillGrid(noise, grid, gc, increasement);
+			fillGrid(noise, grid, gc, increment);
+			generatePolyMesh(grid);
 		});
 
 		grid.getShowGrid().setValue(false);
 
 		showGridField.selectedProperty().addListener(e -> {
 			grid.getShowGrid().setValue(showGridField.isSelected());
-			fillGrid(noise, grid, gc, increasement);
+			fillGrid(noise, grid, gc, increment);
+			generatePolyMesh(grid);
 		});
 
 		canvasPane.heightProperty().addListener(e -> {
@@ -132,7 +168,8 @@ public class NoiseController implements Initializable {
 			grid.getSizeY().setValue(canvas.getHeight());
 			scaleYSlider.setMax(canvas.getHeight());
 			scaleYSlider.setValue(scaleYSlider.getMax() - canvas.getHeight());
-			fillGrid(noise, grid, gc, increasement);
+			fillGrid(noise, grid, gc, increment);
+			generatePolyMesh(grid);
 		});
 
 		canvasPane.widthProperty().addListener(e -> {
@@ -140,27 +177,32 @@ public class NoiseController implements Initializable {
 			grid.getSizeX().setValue(canvas.getWidth());
 			scaleXSlider.setMax(canvas.getWidth());
 			scaleXSlider.setValue(canvas.getWidth());
-			fillGrid(noise, grid, gc, increasement);
+			fillGrid(noise, grid, gc, increment);
+			generatePolyMesh(grid);
 		});
 
-		resSlider.setOnMouseReleased(e -> {
+		resSlider.valueProperty().addListener(e -> {
 			grid.getWidth().setValue(resSlider.getValue());
-			fillGrid(noise, grid, gc, increasement);
+			fillGrid(noise, grid, gc, increment);
+			generatePolyMesh(grid);
 		});
 
-		scaleXSlider.setOnMouseReleased(e -> {
+		scaleXSlider.valueProperty().addListener(e -> {
 			grid.getSizeX().setValue(scaleXSlider.getValue());
-			fillGrid(noise, grid, gc, increasement);
+			fillGrid(noise, grid, gc, increment);
+			generatePolyMesh(grid);
 		});
 
-		scaleYSlider.setOnMouseReleased(e -> {
+		scaleYSlider.valueProperty().addListener(e -> {
 			grid.getSizeY().setValue(scaleYSlider.getMax() - scaleYSlider.getValue());
-			fillGrid(noise, grid, gc, increasement);
+			fillGrid(noise, grid, gc, increment);
+			generatePolyMesh(grid);
 		});
 
-		freqSlider.setOnMouseReleased(e -> {
+		freqSlider.valueProperty().addListener(e -> {
 			noise.setFrequency(freqSlider.getValue());
-			fillGrid(noise, grid, gc, increasement);
+			fillGrid(noise, grid, gc, increment);
+			generatePolyMesh(grid);
 			freqValField.setText(Double.toString(freqSlider.getValue()));
 		});
 
@@ -172,9 +214,10 @@ public class NoiseController implements Initializable {
 			freqMinField.setText(Double.toString(freqSlider.getMin()));
 		});
 
-		amplSlider.setOnMouseReleased(e -> {
+		amplSlider.valueProperty().addListener(e -> {
 			noise.setAmplitude(amplSlider.getValue());
-			fillGrid(noise, grid, gc, increasement);
+			fillGrid(noise, grid, gc, increment);
+			generatePolyMesh(grid);
 			amplValField.setText(Double.toString(amplSlider.getValue()));
 		});
 
@@ -223,93 +266,92 @@ public class NoiseController implements Initializable {
 		layersField.textProperty().addListener(e -> {
 			if (RenUtilities.isNumeric(layersField.getText(), false, false)) {
 				noise.setLayers(Integer.valueOf(layersField.getText()));
-				fillGrid(noise, grid, gc, increasement);
+				fillGrid(noise, grid, gc, increment);
+				generatePolyMesh(grid);
 			}
 		});
 
 		freqMultiField.textProperty().addListener(e -> {
 			if (RenUtilities.isNumeric(freqMultiField.getText(), true, true)) {
 				noise.setFreqMult(Double.valueOf(freqMultiField.getText()));
-				fillGrid(noise, grid, gc, increasement);
+				fillGrid(noise, grid, gc, increment);
+				generatePolyMesh(grid);
 			}
 		});
 
 		amplMultiField.textProperty().addListener(e -> {
 			if (RenUtilities.isNumeric(amplMultiField.getText(), true, true)) {
 				noise.setAmplMult(Double.valueOf(amplMultiField.getText()));
-				fillGrid(noise, grid, gc, increasement);
+				fillGrid(noise, grid, gc, increment);
+				generatePolyMesh(grid);
 			}
 		});
 
 		increaField.textProperty().addListener(e -> {
 			if (RenUtilities.isNumeric(increaField.getText(), true, true)) {
-				increasement = Double.valueOf(increaField.getText());
-				fillGrid(noise, grid, gc, increasement);
+				increment = Double.valueOf(increaField.getText());
+				fillGrid(noise, grid, gc, increment);
+				generatePolyMesh(grid);
 			}
 		});
 
 		seedField.textProperty().addListener(e -> {
 			if (RenUtilities.isNumeric(seedField.getText(), false, true)) {
 				noise.setSeed(Long.valueOf(seedField.getText()));
-				fillGrid(noise, grid, gc, increasement);
+				fillGrid(noise, grid, gc, increment);
+				generatePolyMesh(grid);
 			}
 		});
 
-		creNoiseButton.setOnAction(e -> {
-
-			tris.clear();
-
-			double res = grid.getAmountX() / grid.getAmountY();
-
-			for (int x = 0; x < grid.getAmountX() - 1; x++) {
-
-				for (int y = 0; y < grid.getAmountY() - 1; y++) {
-
-					Point3D v1 = new Point3D((x - grid.getAmountX() / 2) / res, grid.getVal(x, y) * 5, y / res);
-					Point3D v2 = new Point3D(((x + 1) - grid.getAmountX() / 2) / res, grid.getVal(x + 1, y) * 5,
-							y / res);
-					Point3D v3 = new Point3D(((x + 1) - grid.getAmountX() / 2) / res, grid.getVal(x + 1, y + 1) * 5,
-							(y + 1) / res);
-					Point3D v4 = new Point3D((x - grid.getAmountX() / 2) / res, grid.getVal(x, y + 1) * 5,
-							(y + 1) / res);
-
-					tris.add(new RenTriangle(v4, v2, v1));
-					tris.add(new RenTriangle(v3, v2, v4));
-
-				}
-
-			}
-
-			RenShape noiseShape = new RenShape("noise");
-			noiseShape.setSize(new Point3D(1, 1, 1));
-			noiseShape.getPolys().addAll(tris);
-			MainController.mainScene.getShapes().add(noiseShape);
-
-			Stage stage = (Stage) canvasPane.getScene().getWindow();
-			stage.close();
-
+		colorCheck.selectedProperty().addListener(e -> {
+			fillGrid(noise, grid, gc, increment);
+			generatePolyMesh(grid);
 		});
 
-		fillGrid(noise, grid, gc, increasement);
+		fillGrid(noise, grid, gc, increment);
 
 		canvasPane.getChildren().add(canvas);
 
 	}
 
-	private void fillGrid(NoiseGenerator2D noise, ResGrid grid, GraphicsContext gc, double increasement) {
+	private void generatePolyMesh(ResGrid grid) {
+
+		noiseShape.generatePolyMesh();
+
+		MainController.renderMain();
+
+	}
+
+	private void fillGrid(NoiseGenerator2D noise, ResGrid grid, GraphicsContext gc, double increment) {
+
+		gc.clearRect(0, 0, canvasPane.getWidth(), canvasPane.getHeight());
 
 		for (int x = 0; x < grid.getAmountX(); x++) {
 			for (int y = 0; y < grid.getAmountY(); y++) {
 
-				double sum = noise.realNoise(x * increasement, y * increasement);
+				double sum = noise.realNoise(x * increment, y * increment);
 
 				grid.setVal(x, y, sum);
-				gc.setFill(Color.gray(noise.getNoiseGray(sum)));
+
+				if (colorCheck.isSelected()) {
+					gc.setFill(noise.getNoiseRGB(sum));
+				} else {
+					gc.setFill(Color.gray(noise.getNoiseGray(sum)));
+				}
+
 				grid.fillCell(x, y, gc);
 
 			}
 		}
 
+	}
+
+	public RenNoise getNoiseShape() {
+		return noiseShape;
+	}
+
+	public void setNoiseShape(RenNoise noiseShape) {
+		this.noiseShape = noiseShape;
 	}
 
 }

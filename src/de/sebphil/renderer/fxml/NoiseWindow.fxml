@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="506.0" prefWidth="795.0" stylesheets="@../css/MainStyle.css" xmlns="http://javafx.com/javafx/1.8.0.191" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.sebphil.renderer.controllers.NoiseController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="506.0" prefWidth="795.0" stylesheets="@../css/MainStyle.css" xmlns="http://javafx.com/javafx/1.8.0.191" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Label id="title" layoutX="14.0" layoutY="14.0" text="Noise-Generator">
          <font>
@@ -39,7 +39,6 @@
       <TextField id="numField" fx:id="freqMultiField" layoutX="156.0" layoutY="239.0" prefHeight="26.0" prefWidth="77.0" promptText="number" text="1" />
       <Label id="text2" layoutX="21.0" layoutY="273.0" text="Amplitude-multiplier:" />
       <TextField id="numField" fx:id="amplMultiField" layoutX="156.0" layoutY="269.0" prefHeight="26.0" prefWidth="77.0" promptText="number" text="1" />
-      <Button id="importButton" fx:id="creNoiseButton" layoutX="14.0" layoutY="371.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="360.0" text="create noise" />
       <Label id="text2" layoutX="21.0" layoutY="301.0" text="Increasement:" />
       <TextField id="numField" fx:id="increaField" layoutX="156.0" layoutY="297.0" prefHeight="26.0" prefWidth="77.0" promptText="number" text="1" />
       <Separator layoutX="16.0" layoutY="354.0" prefHeight="17.0" prefWidth="360.0" />
@@ -47,5 +46,6 @@
       <CheckBox fx:id="showGridField" layoutX="430.0" layoutY="52.0" mnemonicParsing="false" text="show grid" />
       <Label id="text2" layoutX="19.0" layoutY="323.0" text="Seed:" />
       <TextField id="numField" fx:id="seedField" layoutX="156.0" layoutY="319.0" prefHeight="26.0" prefWidth="77.0" promptText="number" text="1" />
+      <CheckBox fx:id="colorCheck" layoutX="519.0" layoutY="52.0" mnemonicParsing="false" text="color height" />
    </children>
 </AnchorPane>

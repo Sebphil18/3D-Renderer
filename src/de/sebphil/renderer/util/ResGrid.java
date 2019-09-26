@@ -12,7 +12,7 @@ public class ResGrid {
 	private int amountX, amountY;
 	private double[] grid;
 
-	public ResGrid(double sizeX, double sizeY, int numX, int numY, GraphicsContext gc) {
+	public ResGrid(double sizeX, double sizeY, GraphicsContext gc) {
 
 		this.sizeX = new SimpleDoubleProperty(sizeX);
 		this.sizeY = new SimpleDoubleProperty(sizeY);
@@ -20,6 +20,22 @@ public class ResGrid {
 		this.showGrid = new SimpleBooleanProperty(false);
 
 		this.grid = generateGrid();
+
+		setUpListener(gc);
+
+	}
+
+	public ResGrid(double sizeX, double sizeY) {
+
+		this.sizeX = new SimpleDoubleProperty(sizeX);
+		this.sizeY = new SimpleDoubleProperty(sizeY);
+		this.width = new SimpleDoubleProperty(10);
+		this.showGrid = new SimpleBooleanProperty(false);
+		this.grid = generateGrid();
+
+	}
+
+	public void setUpListener(GraphicsContext gc) {
 
 		this.sizeX.addListener(e -> {
 			grid = generateGrid();

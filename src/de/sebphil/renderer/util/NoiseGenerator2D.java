@@ -3,6 +3,7 @@ package de.sebphil.renderer.util;
 import java.util.Random;
 
 import javafx.geometry.Point2D;
+import javafx.scene.paint.Color;
 
 public class NoiseGenerator2D {
 
@@ -65,6 +66,33 @@ public class NoiseGenerator2D {
 
 	public double getNoiseGray(double sum) {
 		return Math.abs(map(-1, 1, sum / layers, 0, 1) % 1);
+	}
+
+	public Color getNoiseRGB(double sum) {
+
+		int value = (int) Math.abs(map(-1, 1, sum, 0, 1020));
+
+		int red = 0, green = 0, blue = 0;
+
+		if (value < 510) {
+			blue = 255;
+			green = (value % 510) / 2;
+		} else if (value < 1020) {
+
+			green = 255;
+			blue = 255 - (value % 510) / 2;
+
+		} else if (value < 1530) {
+
+			red = (value % 510) / 2;
+			green = 255;
+
+		} else {
+			red = 255;
+			green = 255 - (value % 510) / 2;
+		}
+
+		return Color.rgb(red, green, blue);
 	}
 
 	private double noise(double x, double y) {
@@ -159,22 +187,6 @@ public class NoiseGenerator2D {
 
 	public void setLayers(int layers) {
 		this.layers = layers;
-	}
-
-	public int[] getPermTable() {
-		return permTable;
-	}
-
-	public void setPermTable(int[] permTable) {
-		this.permTable = permTable;
-	}
-
-	public Point2D[] getGard() {
-		return gard;
-	}
-
-	public void setGard(Point2D[] gard) {
-		this.gard = gard;
 	}
 
 	public void setSeed(long seed) {

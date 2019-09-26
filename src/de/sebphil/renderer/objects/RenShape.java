@@ -24,7 +24,7 @@ public class RenShape extends RenObject {
 		this.sizeMat = new double[4][4];
 		this.polys = new ArrayList<RenTriangle>();
 		this.translation = new Point3D(0, 0, 0);
-		this.size = new Point3D(100, 100, 1);
+		this.size = new Point3D(1, 1, 1);
 	}
 
 	public RenShape(String name, Color color) {

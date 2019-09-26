@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
 import java.util.UUID;
 
 import de.sebphil.renderer.objects.RenCamera;
+import de.sebphil.renderer.objects.RenNoise;
 import de.sebphil.renderer.objects.RenObject;
 import de.sebphil.renderer.objects.RenScene;
 import de.sebphil.renderer.objects.RenShape;
@@ -31,6 +32,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
@@ -96,8 +98,8 @@ public class MainController implements Initializable {
 	@FXML
 	private Pane canvasPane;
 
-	private SebRenderer mainRenderer;
-	private PixelWriter mainWriter;
+	private static SebRenderer mainRenderer;
+	private static PixelWriter mainWriter;
 	public static RenScene mainScene;
 	public static TreeItem<RenObjItem> lightItem;
 
@@ -348,7 +350,13 @@ public class MainController implements Initializable {
 
 				if (arg2.getParent() != null) {
 					if (arg2.getParent().equals(shapesItem)) {
-						loadShapeOptions((RenShape) selectedObj, optionsBox, mainWriter);
+
+						if (selectedObj instanceof RenNoise) {
+							loadNoiseOptions((RenNoise) selectedObj, optionsBox);
+						} else {
+							loadShapeOptions((RenShape) selectedObj, optionsBox, mainWriter);
+						}
+
 					} else if (arg2.getParent().equals(lightItem)) {
 						loadLightOptions(selectedObj, optionsBox);
 					}
@@ -367,7 +375,7 @@ public class MainController implements Initializable {
 				if (pickedNode instanceof CustomTreeCell) {
 					CustomTreeCell cell = (CustomTreeCell) pickedNode;
 					TreeItem<RenObjItem> item = cell.getTreeItem();
-					openMenu(e.getScreenX(), e.getScreenY(), item, shapesItem, lightItem);
+					openMenu(e.getScreenX(), e.getScreenY(), item, shapesItem);
 				}
 
 			}
@@ -399,7 +407,7 @@ public class MainController implements Initializable {
 	@FXML
 	public void createNoise() {
 
-		openCreNoiseWin().show();
+		openNoiseWin().show();
 
 	}
 
@@ -581,8 +589,6 @@ public class MainController implements Initializable {
 		shapeBox.getChildren().addAll(namePane, seps[5], title1, posPane, seps[0], title2, transPane, seps[1], title3,
 				rotPane, seps[2], title4, sizePane, seps[3], title5, colPicker, seps[4], title6, prePane);
 
-		optionsBox.getChildren().addAll(shapeBox);
-
 		colPicker.setOnAction(e -> {
 			copyShape.setColor(colPicker.getValue());
 			shape.setColor(colPicker.getValue());
@@ -616,6 +622,48 @@ public class MainController implements Initializable {
 			}
 
 		});
+
+		optionsBox.getChildren().add(shapeBox);
+
+	}
+
+	private void loadNoiseOptions(RenNoise noise, VBox optionsBox) {
+
+		loadShapeOptions(noise, optionsBox, mainWriter);
+
+		VBox contentBox = (VBox) optionsBox.getChildren().get(0);
+
+		Button editNoiseButton = new Button("edit noise");
+
+		editNoiseButton.setOnAction(e -> {
+
+			Stage stage = new Stage();
+
+			AnchorPane root = new AnchorPane();
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/de/sebphil/renderer/fxml/NoiseWindow.fxml"));
+
+			NoiseController controller = new NoiseController();
+			controller.setNoiseShape(noise);
+
+			loader.setController(controller);
+
+			try {
+				root = loader.load();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+			Scene scene = new Scene(root);
+
+			stage.setScene(scene);
+			stage.setTitle("Noise-Generator");
+
+			stage.show();
+
+		});
+
+		contentBox.getChildren().add(editNoiseButton);
 
 	}
 
@@ -700,8 +748,7 @@ public class MainController implements Initializable {
 
 	}
 
-	private void openMenu(double x, double y, TreeItem<RenObjItem> item, TreeItem<RenObjItem> objectsItem,
-			TreeItem<RenObjItem> lightsItem) {
+	private void openMenu(double x, double y, TreeItem<RenObjItem> item, TreeItem<RenObjItem> objectsItem) {
 
 		ContextMenu menu = new ContextMenu();
 
@@ -724,7 +771,7 @@ public class MainController implements Initializable {
 			});
 
 			item2.setOnAction(e -> {
-				addObject(lightsItem, new RenObject("light"));
+				addObject(lightItem, new RenObject("light"));
 			});
 
 		} else {
@@ -735,29 +782,30 @@ public class MainController implements Initializable {
 
 				MenuItem item1 = new MenuItem("import obj");
 				MenuItem item2 = new MenuItem("remove shape");
-				MenuItem item3 = new MenuItem("create noise");
+				MenuItem item3 = new MenuItem("add noise");
 
 				item1.setId("menuclickable");
 				item2.setId("menuclickable");
 				item3.setId("menuclickable");
 
 				menu.getItems().add(item1);
-				menu.getItems().add(item2);
 				menu.getItems().add(item3);
+				menu.getItems().add(item2);
 
 				item1.setOnAction(e -> {
 					openImpObjWin().show();
 				});
 
 				item2.setOnAction(e -> {
-					removeObject(item.getValue().getRenObj().getUuid(), objectsItem);
+					if (parent.equals(objectsItem))
+						removeObject(item.getValue().getRenObj().getUuid(), objectsItem);
 				});
 
 				item3.setOnAction(e -> {
-					openCreNoiseWin().show();
+					openNoiseWin().show();
 				});
 
-			} else if (parent.equals(lightsItem) || item.equals(lightsItem)) {
+			} else if (parent.equals(lightItem) || item.equals(lightItem)) {
 
 				MenuItem item1 = new MenuItem("add light");
 				MenuItem item2 = new MenuItem("remove light");
@@ -769,11 +817,12 @@ public class MainController implements Initializable {
 				menu.getItems().add(item2);
 
 				item1.setOnAction(e -> {
-					addObject(lightsItem, new RenObject("light"));
+					addObject(lightItem, new RenObject("light"));
 				});
 
 				item2.setOnAction(e -> {
-					removeObject(item.getValue().getRenObj().getUuid(), lightsItem);
+					if (parent.equals(lightItem))
+						removeObject(item.getValue().getRenObj().getUuid(), lightItem);
 				});
 
 			}
@@ -951,6 +1000,8 @@ public class MainController implements Initializable {
 
 		if (renObj instanceof RenShape) {
 			mainScene.getShapes().add((RenShape) renObj);
+		} else if (renObj instanceof RenNoise) {
+			mainScene.getShapes().add((RenShape) renObj);
 		} else {
 			mainScene.getLights().add(renObj.getPosition());
 		}
@@ -1010,6 +1061,11 @@ public class MainController implements Initializable {
 		}
 
 		return 1 / ((double) (stop - start) / 1000);
+	}
+
+	public static void renderMain() {
+		mainRenderer.update(mainScene);
+		mainRenderer.draw(mainWriter);
 	}
 
 	private Stage openImpObjWin() {
@@ -1080,32 +1136,35 @@ public class MainController implements Initializable {
 		stage.initStyle(StageStyle.UTILITY);
 		stage.setTitle("exporting Scene");
 
-		stage.setOnCloseRequest(e -> {
-			render(mainRenderer, mainScene, mainWriter);
-		});
-
 		return stage;
 
 	}
 
-	private Stage openCreNoiseWin() {
+	private Stage openNoiseWin() {
 
 		Stage stage = new Stage();
 
 		AnchorPane root = new AnchorPane();
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/de/sebphil/renderer/fxml/NoiseWindow.fxml"));
+
+		NoiseController controller = new NoiseController();
+		loader.setController(controller);
 
 		try {
-			root = FXMLLoader.load(getClass().getResource("/de/sebphil/renderer/fxml/NoiseWindow.fxml"));
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+			root = loader.load();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 
 		Scene scene = new Scene(root);
 
 		stage.setScene(scene);
 		stage.setTitle("Noise-Generator");
+
+		stage.setOnCloseRequest(e -> {
+			render(mainRenderer, mainScene, mainWriter);
+		});
 
 		return stage;
 
