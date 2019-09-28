@@ -55,7 +55,7 @@ public class SebRenderer {
 		Point3D to = new Point3D(0, 0, 1);
 
 		double[][] camView = camera.lookAt(to);
-
+		
 		for (RenShape shape : scene.getShapes()) {
 
 			double[][] transMat = RenShape.generateTransformationMat(shape);
@@ -87,8 +87,8 @@ public class SebRenderer {
 						vert[i] = RenUtilities.multMatVec(camView, vert[i]);
 					}
 
-					RenTriangle[] triangles = clipToPlane(new Point3D(0, 0, near), new Point3D(0, 0, 1), vert);
-
+					RenTriangle[] triangles = clipToPlane(new Point3D(0, 0, near), new Point3D(0, 0, 1), vert, tri.getColor());
+					
 					if (triangles.length == 0)
 						continue;
 
@@ -107,7 +107,9 @@ public class SebRenderer {
 						BlockingQueue<RenTriangle> queue = new LinkedBlockingQueue<RenTriangle>();
 						queue.add(new RenTriangle(projVert[0], projVert[1], projVert[2]));
 						int trianglesToRaster = 1;
-
+						
+						Color color2 = projTri.getColor();
+						
 						for (int i = 0; i < 4; i++) {
 
 							while (trianglesToRaster > 0) {
@@ -118,16 +120,16 @@ public class SebRenderer {
 
 								if (i == 0) {
 									clipped = clipToPlane(new Point3D(0, 0, 0), new Point3D(0, 1, 0),
-											testTri.getVert());
+											testTri.getVert(), color2);
 								} else if (i == 1) {
 									clipped = clipToPlane(new Point3D(0, height - 1, 0), new Point3D(0, -1, 0),
-											testTri.getVert());
+											testTri.getVert(), color2);
 								} else if (i == 2) {
 									clipped = clipToPlane(new Point3D(0, 0, 0), new Point3D(1, 0, 0),
-											testTri.getVert());
+											testTri.getVert(), color2);
 								} else if (i == 3) {
 									clipped = clipToPlane(new Point3D(width - 1, 0, 0), new Point3D(-1, 0, 0),
-											testTri.getVert());
+											testTri.getVert(), color2);
 								}
 
 								for (int n = 0; n < clipped.length; n++) {
@@ -137,7 +139,7 @@ public class SebRenderer {
 							}
 							trianglesToRaster = queue.size();
 						}
-
+						
 						while (queue.size() > 0) {
 
 							RenTriangle triClip = queue.poll();
@@ -148,7 +150,7 @@ public class SebRenderer {
 								dirLight = dirLight.normalize();
 								double dotLight = normal.dotProduct(dirLight);
 								double shade = Math.max(scene.getAmbient(), dotLight);
-								Color shadeCol = shade(shape.getColor(), shade);
+								Color shadeCol = shade(triClip.getColor(), shade);
 								r += shadeCol.getRed();
 								g += shadeCol.getGreen();
 								b += shadeCol.getBlue();
@@ -165,7 +167,7 @@ public class SebRenderer {
 								o = 1;
 
 							Color color = new Color(r, g, b, o);
-
+							
 							rasterizeTri(triClip.getVert(), color);
 						}
 
@@ -176,7 +178,7 @@ public class SebRenderer {
 			}
 
 		}
-
+		
 	}
 
 	private void refreshBuffer() {
@@ -186,7 +188,7 @@ public class SebRenderer {
 		}
 	}
 
-	private RenTriangle[] clipToPlane(Point3D planeP, Point3D planeN, Point3D[] vert) {
+	private RenTriangle[] clipToPlane(Point3D planeP, Point3D planeN, Point3D[] vert, Color color) {
 
 		planeN = planeN.normalize();
 
@@ -225,18 +227,18 @@ public class SebRenderer {
 
 			return new RenTriangle[] {
 					new RenTriangle(inside[0], lineIntersectPlane(planeP, planeN, inside[0], outside[0]),
-							lineIntersectPlane(planeP, planeN, inside[0], outside[1])) };
+							lineIntersectPlane(planeP, planeN, inside[0], outside[1]), color) };
 
 		} else if (insideCount == 2 && outsideCount == 1) {
 
 			return new RenTriangle[] {
-					new RenTriangle(inside[0], inside[1], lineIntersectPlane(planeP, planeN, inside[0], outside[0])),
+					new RenTriangle(inside[0], inside[1], lineIntersectPlane(planeP, planeN, inside[0], outside[0]), color),
 					new RenTriangle(inside[1], lineIntersectPlane(planeP, planeN, inside[0], outside[0]),
-							lineIntersectPlane(planeP, planeN, inside[1], outside[0])) };
+							lineIntersectPlane(planeP, planeN, inside[1], outside[0]), color) };
 
 		} else if (insideCount == 3 && outsideCount == 0) {
 
-			return new RenTriangle[] { new RenTriangle(vert[0], vert[1], vert[2]) };
+			return new RenTriangle[] { new RenTriangle(vert[0], vert[1], vert[2], color) };
 		}
 
 		return null;

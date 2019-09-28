@@ -70,29 +70,23 @@ public class NoiseGenerator2D {
 
 	public Color getNoiseRGB(double sum) {
 
-		int value = (int) Math.abs(map(-1, 1, sum, 0, 1020));
+		Color color = Color.DARKBLUE;
 
-		int red = 0, green = 0, blue = 0;
+		double value = map(-1 * amplitude * layers, 1 * amplitude * layers, sum, -0.2, 1);
 
-		if (value < 510) {
-			blue = 255;
-			green = (value % 510) / 2;
-		} else if (value < 1020) {
-
-			green = 255;
-			blue = 255 - (value % 510) / 2;
-
-		} else if (value < 1530) {
-
-			red = (value % 510) / 2;
-			green = 255;
-
+		if (value <= 0.1) {
+			color = Color.web("#0a0075").interpolate(Color.web("#00b4eb"), value / 0.1);
+		} else if (value <= 0.2) {
+			color = Color.web("#00b4eb").interpolate(Color.web("#26bf00"), value / 0.2);
+		} else if (value <= 0.4) {
+			color = Color.web("#26bf00").interpolate(Color.web("#b2ed02"), value / 0.4);
+		} else if (value <= 0.7) {
+			color = Color.web("#b2ed02").interpolate(Color.web("#e1eb8d"), value / 0.7);
 		} else {
-			red = 255;
-			green = 255 - (value % 510) / 2;
+			color = Color.web("#e1eb8d").interpolate(Color.web("#cf7800"), value / 1.1);
 		}
 
-		return Color.rgb(red, green, blue);
+		return color;
 	}
 
 	private double noise(double x, double y) {

@@ -5,7 +5,7 @@ import java.util.Random;
 import de.sebphil.renderer.util.NoiseGenerator2D;
 import de.sebphil.renderer.util.ResGrid;
 import javafx.geometry.Point3D;
-import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 
 public class RenNoise extends RenShape {
 
@@ -30,7 +30,7 @@ public class RenNoise extends RenShape {
 
 	}
 
-	public void generatePolyMesh() {
+	public void generatePolyMesh(boolean colored) {
 
 		super.getPolys().clear();
 
@@ -42,21 +42,13 @@ public class RenNoise extends RenShape {
 				Point3D v3 = new Point3D(((x + 1) - grid.getAmountX() / 2), grid.getVal(x + 1, y + 1) * 5, (y + 1));
 				Point3D v4 = new Point3D((x - grid.getAmountX() / 2), grid.getVal(x, y + 1) * 5, (y + 1));
 
-				super.getPolys().add(new RenTriangle(v4, v2, v1));
-				super.getPolys().add(new RenTriangle(v3, v2, v4));
+				Color color = super.getColor();
 
-			}
-		}
+				if (colored)
+					color = noise.getNoiseRGB(grid.getVal(x, y));
 
-	}
-
-	public void drawNoise(GraphicsContext gc) {
-
-		for (int x = 0; x < grid.getAmountX(); x++) {
-			for (int y = 0; y < grid.getAmountY(); y++) {
-
-				gc.setStroke(noise.getNoiseRGB(grid.getVal(x, y)));
-				grid.fillCell(x, y, gc);
+				super.getPolys().add(new RenTriangle(v4, v2, v1, color));
+				super.getPolys().add(new RenTriangle(v3, v2, v4, color));
 
 			}
 		}

@@ -13,6 +13,7 @@ import de.sebphil.renderer.objects.RenNoise;
 import de.sebphil.renderer.objects.RenObject;
 import de.sebphil.renderer.objects.RenScene;
 import de.sebphil.renderer.objects.RenShape;
+import de.sebphil.renderer.objects.RenTriangle;
 import de.sebphil.renderer.objects.SebRenderer;
 import de.sebphil.renderer.uicontrol.CustomTreeCell;
 import de.sebphil.renderer.uicontrol.RenObjItem;
@@ -592,6 +593,9 @@ public class MainController implements Initializable {
 		colPicker.setOnAction(e -> {
 			copyShape.setColor(colPicker.getValue());
 			shape.setColor(colPicker.getValue());
+			for(RenTriangle tri : shape.getPolys()) {
+				tri.setColor(colPicker.getValue());
+			}
 			render(preRenderer, preScene, preWriter);
 			render(mainRenderer, mainScene, writer);
 		});
@@ -1134,7 +1138,7 @@ public class MainController implements Initializable {
 
 		stage.setResizable(false);
 		stage.initStyle(StageStyle.UTILITY);
-		stage.setTitle("exporting Scene");
+		stage.setTitle("importing Scene");
 
 		return stage;
 

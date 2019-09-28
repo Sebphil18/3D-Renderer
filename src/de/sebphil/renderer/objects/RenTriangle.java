@@ -3,13 +3,20 @@ package de.sebphil.renderer.objects;
 import java.util.Arrays;
 
 import javafx.geometry.Point3D;
+import javafx.scene.paint.Color;
 
 public class RenTriangle {
 
 	private Point3D[] vert;
+	private Color color = Color.WHITE;
 
 	public RenTriangle(Point3D v1, Point3D v2, Point3D v3) {
 		vert = new Point3D[] { v1, v2, v3 };
+	}
+	
+	public RenTriangle(Point3D v1, Point3D v2, Point3D v3, Color color) {
+		vert = new Point3D[] { v1, v2, v3 };
+		this.color = color;
 	}
 
 	public Point3D[] getVert() {
@@ -38,5 +45,13 @@ public class RenTriangle {
 
 	public void setV3(Point3D v3) {
 		this.vert[2] = v3;
+	}
+
+	public Color getColor() {
+		return color;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
 	}
 }

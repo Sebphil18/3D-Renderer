@@ -170,6 +170,9 @@ public class RenShape extends RenObject {
 
 	public void setColor(Color color) {
 		this.color = color;
+		for(RenTriangle tri : getPolys()) {
+			tri.setColor(color);
+		}
 	}
 
 	public List<RenTriangle> getPolys() {

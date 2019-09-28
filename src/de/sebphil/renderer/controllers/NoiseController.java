@@ -308,6 +308,18 @@ public class NoiseController implements Initializable {
 			generatePolyMesh(grid);
 		});
 
+		freqValField.textProperty().addListener(e -> {
+			if(RenUtilities.isNumeric(freqValField.getText(), true, true)) {
+				freqSlider.setValue(Double.valueOf(freqValField.getText()));
+			}
+		});
+		
+		amplValField.textProperty().addListener(e -> {
+			if(RenUtilities.isNumeric(amplValField.getText(), true, true)) {
+				amplSlider.setValue(Double.valueOf(amplValField.getText()));
+			}
+		});
+		
 		fillGrid(noise, grid, gc, increment);
 
 		canvasPane.getChildren().add(canvas);
@@ -316,7 +328,7 @@ public class NoiseController implements Initializable {
 
 	private void generatePolyMesh(ResGrid grid) {
 
-		noiseShape.generatePolyMesh();
+		noiseShape.generatePolyMesh(colorCheck.isSelected());
 
 		MainController.renderMain();
 
@@ -339,7 +351,7 @@ public class NoiseController implements Initializable {
 					gc.setFill(Color.gray(noise.getNoiseGray(sum)));
 				}
 
-				grid.fillCell(x, y, gc);
+				grid.fillCell(x, grid.getAmountY() - y, gc);
 
 			}
 		}
