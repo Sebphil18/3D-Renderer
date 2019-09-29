@@ -122,5 +122,45 @@ public class RenUtilities {
 		timeline.play();
 
 	}
+	
+	public static void shiftArrDown(double[] array, int width, int height) {
+		
+		for(int y=0;y<height-1;y++) {
+		
+			for(int x=0;x<width;x++) {
+				array[y * width + x] = array[(y+1) * width + x];
+			}
+			
+		}
+		
+	}
+	
+	public static void shiftArrUp(double[] array, int width, int height) {
+		
+		for(int y=height-1;y>0;--y) {
+			
+			for(int x=0;x<width;x++) {
+				
+				array[y * width + x] = array[(y-1) * width + x];
+				
+			}
+			
+		}
+		
+	}
+	
+	public static void shiftArrLeft(double[] array, int width, int height) {
+		
+		for(int x=0;x<width-1;x++) {
+			
+			for(int y=0;y<height;y++) {
+				
+				array[y * width + x] = array[y * width + (x+1)];
+				
+			}
+			
+		}
+		
+	}
 
 }

@@ -77,6 +77,9 @@ public class NoiseController implements Initializable {
 	@FXML
 	private CheckBox colorCheck;
 
+    @FXML
+    private CheckBox dynamicCheck;
+	
 	private double increment;
 	private long seed;
 	private RenNoise noiseShape;
@@ -107,6 +110,8 @@ public class NoiseController implements Initializable {
 
 		} else {
 
+			noiseShape.setOffsetY(0);
+			
 			grid = noiseShape.getGrid();
 			noise = noiseShape.getNoise();
 			seed = noiseShape.getSeed();
@@ -124,7 +129,7 @@ public class NoiseController implements Initializable {
 			amplSlider.setValue(amplitude);
 			amplSlider.setMax(amplitude * 2);
 			amplSlider.setMin(amplitude / 2);
-
+			
 			layersField.setText(Integer.toString(noise.getLayers()));
 			freqMultiField.setText(Double.toString(noise.getFreqMult()));
 			amplMultiField.setText(Double.toString(noise.getAmplMult()));
@@ -304,8 +309,12 @@ public class NoiseController implements Initializable {
 		});
 
 		colorCheck.selectedProperty().addListener(e -> {
-			fillGrid(noise, grid, gc, increment);
-			generatePolyMesh(grid);
+			if(!colorCheck.isSelected() && dynamicCheck.isSelected()) {
+				colorCheck.setSelected(true);
+			}else {
+				fillGrid(noise, grid, gc, increment);
+				generatePolyMesh(grid);
+			}
 		});
 
 		freqValField.textProperty().addListener(e -> {
@@ -319,6 +328,15 @@ public class NoiseController implements Initializable {
 				amplSlider.setValue(Double.valueOf(amplValField.getText()));
 			}
 		});
+		
+		dynamicCheck.selectedProperty().addListener(e-> {
+			noiseShape.setDynamic(dynamicCheck.isSelected());
+			if(!colorCheck.isSelected() && dynamicCheck.isSelected()) {
+				colorCheck.setSelected(true);
+			}
+		});
+		
+		dynamicCheck.setSelected(noiseShape.isDynamic());
 		
 		fillGrid(noise, grid, gc, increment);
 

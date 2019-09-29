@@ -18,6 +18,7 @@ import de.sebphil.renderer.objects.SebRenderer;
 import de.sebphil.renderer.uicontrol.CustomTreeCell;
 import de.sebphil.renderer.uicontrol.RenObjItem;
 import de.sebphil.renderer.util.RenUtilities;
+import de.sebphil.renderer.util.ResGrid;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -241,6 +242,7 @@ public class MainController implements Initializable {
 
 				Point3D forward = cam.getLookDir().multiply(0.1);
 				cam.setPosition(cam.getPosition().add(forward));
+				moveNoises(new Point3D(0, 0, 1));
 
 			} else if (e.getCode().equals(KeyCode.S)) {
 
@@ -593,7 +595,7 @@ public class MainController implements Initializable {
 		colPicker.setOnAction(e -> {
 			copyShape.setColor(colPicker.getValue());
 			shape.setColor(colPicker.getValue());
-			for(RenTriangle tri : shape.getPolys()) {
+			for (RenTriangle tri : shape.getPolys()) {
 				tri.setColor(colPicker.getValue());
 			}
 			render(preRenderer, preScene, preWriter);
@@ -1171,6 +1173,65 @@ public class MainController implements Initializable {
 		});
 
 		return stage;
+
+	}
+
+	private void moveNoises(Point3D direction) {
+
+		Point3D pos = mainScene.getCamera().getPosition();
+		Point3D lookDir = mainScene.getCamera().getLookDir();
+
+		for (RenShape shape : mainScene.getShapes()) {
+
+			if (shape instanceof RenNoise) {
+
+				RenNoise noiseShape = (RenNoise) shape;
+
+				if (noiseShape.isDynamic()) {
+
+					ResGrid grid = noiseShape.getGrid();
+
+					pos = new Point3D(pos.getX(), pos.getY(), pos.getZ() - grid.getAmountY() / 2);
+					noiseShape.setPosition(RenUtilities.multVecVec(pos, new Point3D(1, 0, 1)));
+
+					if (lookDir.getZ() > 0) {
+
+						noiseShape.setOffsetY(noiseShape.getOffsetY() + 1 * lookDir.getZ());
+						RenUtilities.shiftArrDown(grid.getGrid(), grid.getAmountX(), grid.getAmountY());
+
+						double yoff = (grid.getAmountY() - 1) + noiseShape.getOffsetY();
+						
+						for (int x = 0; x < grid.getAmountX(); x++) {
+							
+							grid.setVal(x, grid.getAmountY() - 1, noiseShape.getNoise().realNoise(
+									(x * noiseShape.getIncrement()), (yoff * noiseShape.getIncrement())));
+
+						}
+
+					} else {
+
+						noiseShape.setOffsetY(noiseShape.getOffsetY() - 1 * lookDir.getZ());
+						RenUtilities.shiftArrUp(grid.getGrid(), grid.getAmountX(), grid.getAmountY());
+
+						double yoff = (grid.getAmountY() - 1) + noiseShape.getOffsetY();
+						
+						for (int x = 0; x < grid.getAmountX(); x++) {
+
+							grid.setVal(x, 0, noiseShape.getNoise().realNoise(
+									(x * noiseShape.getIncrement()),
+									((yoff - (grid.getAmountY())) * noiseShape.getIncrement())));
+
+						}
+
+					}
+
+					noiseShape.generatePolyMesh(true);
+
+				}
+
+			}
+
+		}
 
 	}
 

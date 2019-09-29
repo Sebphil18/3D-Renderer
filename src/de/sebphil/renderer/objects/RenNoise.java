@@ -9,8 +9,9 @@ import javafx.scene.paint.Color;
 
 public class RenNoise extends RenShape {
 
-	private double increment;
+	private double increment, offsetY;
 	private long seed;
+	private boolean dynamic;
 	private NoiseGenerator2D noise;
 	private ResGrid grid;
 	private Random ran;
@@ -21,7 +22,8 @@ public class RenNoise extends RenShape {
 
 		this.ran = new Random();
 		this.noise = new NoiseGenerator2D(ran.nextLong());
-
+		this.dynamic = false;
+		
 		noise.setAmplitude(1);
 		noise.setFrequency(1);
 		noise.setFreqMult(1);
@@ -94,6 +96,22 @@ public class RenNoise extends RenShape {
 	public void setSeed(long seed) {
 		this.seed = seed;
 		noise.setSeed(seed);
+	}
+
+	public double getOffsetY() {
+		return offsetY;
+	}
+
+	public void setOffsetY(double offsetY) {
+		this.offsetY = offsetY;
+	}
+
+	public boolean isDynamic() {
+		return dynamic;
+	}
+
+	public void setDynamic(boolean dynamic) {
+		this.dynamic = dynamic;
 	}
 
 }
