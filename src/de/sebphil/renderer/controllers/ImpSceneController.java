@@ -56,19 +56,19 @@ public class ImpSceneController implements Initializable {
 
 		errorLab.setText("");
 		progressBar.setProgress(0);
-		
+
 		pathField.textProperty().addListener(e -> {
-			
+
 			file = new File(pathField.getText());
-			
-			if(!file.exists() || !file.isFile() || !file.getPath().endsWith(".zip")) {
+
+			if (!file.exists() || !file.isFile() || !file.getPath().endsWith(".zip")) {
 				file = null;
 				RenUtilities.showErrorMessage("path is not valid", errorLab, errCol);
 				return;
 			}
-			
+
 			RenUtilities.showErrorMessage("path is valid", errorLab, Color.LIGHTGREEN);
-			
+
 		});
 
 	}
@@ -141,6 +141,8 @@ public class ImpSceneController implements Initializable {
 
 					RenShape shape = new RenShape(entry.getName());
 
+					Color color = null;
+
 					try {
 
 						shape.setPosition(
@@ -153,7 +155,7 @@ public class ImpSceneController implements Initializable {
 						shape.setAngleY(scanner.nextDouble());
 						shape.setAngleZ(scanner.nextDouble());
 
-						shape.setColor(Color.valueOf(scanner.next()));
+						color = Color.valueOf(scanner.next());
 
 					} catch (InputMismatchException e) {
 						RenUtilities.showErrorMessage(entry.getName() + " is corrupted or has an error", errorLab,
@@ -215,6 +217,8 @@ public class ImpSceneController implements Initializable {
 						}
 
 					}
+
+					shape.setColor(color);
 
 					shapes.add(shape);
 

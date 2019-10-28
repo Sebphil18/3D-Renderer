@@ -9,7 +9,7 @@ import javafx.scene.paint.Color;
 
 public class RenNoise extends RenShape {
 
-	private double increment, offsetY;
+	private double offsetY, maxHeight, minHeight;
 	private long seed;
 	private boolean dynamic;
 	private NoiseGenerator2D noise;
@@ -23,12 +23,13 @@ public class RenNoise extends RenShape {
 		this.ran = new Random();
 		this.noise = new NoiseGenerator2D(ran.nextLong());
 		this.dynamic = false;
-		
+		this.maxHeight = 100;
+		this.minHeight = -100;
+
 		noise.setAmplitude(1);
-		noise.setFrequency(1);
 		noise.setFreqMult(1);
 		noise.setAmplMult(1);
-		noise.setLayers(1);
+		noise.setOctaves(1);
 
 	}
 
@@ -55,14 +56,6 @@ public class RenNoise extends RenShape {
 			}
 		}
 
-	}
-
-	public double getIncrement() {
-		return increment;
-	}
-
-	public void setIncrement(double increment) {
-		this.increment = increment;
 	}
 
 	public NoiseGenerator2D getNoise() {
@@ -103,6 +96,8 @@ public class RenNoise extends RenShape {
 	}
 
 	public void setOffsetY(double offsetY) {
+		if (offsetY < 0)
+			return;
 		this.offsetY = offsetY;
 	}
 
@@ -112,6 +107,22 @@ public class RenNoise extends RenShape {
 
 	public void setDynamic(boolean dynamic) {
 		this.dynamic = dynamic;
+	}
+
+	public double getMaxHeight() {
+		return maxHeight;
+	}
+
+	public void setMaxHeight(double maxHeight) {
+		this.maxHeight = maxHeight;
+	}
+
+	public double getMinHeight() {
+		return minHeight;
+	}
+
+	public void setMinHeight(double minHeight) {
+		this.minHeight = minHeight;
 	}
 
 }

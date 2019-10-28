@@ -148,19 +148,5 @@ public class RenUtilities {
 		}
 		
 	}
-	
-	public static void shiftArrLeft(double[] array, int width, int height) {
-		
-		for(int x=0;x<width-1;x++) {
-			
-			for(int y=0;y<height;y++) {
-				
-				array[y * width + x] = array[y * width + (x+1)];
-				
-			}
-			
-		}
-		
-	}
 
 }

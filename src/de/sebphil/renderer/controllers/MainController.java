@@ -17,6 +17,7 @@ import de.sebphil.renderer.objects.RenTriangle;
 import de.sebphil.renderer.objects.SebRenderer;
 import de.sebphil.renderer.uicontrol.CustomTreeCell;
 import de.sebphil.renderer.uicontrol.RenObjItem;
+import de.sebphil.renderer.util.NoiseGenerator2D;
 import de.sebphil.renderer.util.RenUtilities;
 import de.sebphil.renderer.util.ResGrid;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -99,6 +100,9 @@ public class MainController implements Initializable {
 
 	@FXML
 	private Pane canvasPane;
+
+	private static double prevMouseX = 0;
+	private static double prevMouseY = 0;
 
 	private static SebRenderer mainRenderer;
 	private static PixelWriter mainWriter;
@@ -216,7 +220,7 @@ public class MainController implements Initializable {
 
 		cam.setPosition(new Point3D(0, 0, -3));
 
-		// CONTROLS & GUI
+		// (basic) Controls & GUI
 		KeyCombination shiftA = new KeyCodeCombination(KeyCode.A, KeyCombination.SHIFT_DOWN);
 		KeyCombination shiftD = new KeyCodeCombination(KeyCode.D, KeyCombination.SHIFT_DOWN);
 
@@ -242,7 +246,7 @@ public class MainController implements Initializable {
 
 				Point3D forward = cam.getLookDir().multiply(0.1);
 				cam.setPosition(cam.getPosition().add(forward));
-				moveNoises(new Point3D(0, 0, 1));
+				moveNoisesDown(new Point3D(0, 0, 1));
 
 			} else if (e.getCode().equals(KeyCode.S)) {
 
@@ -285,6 +289,56 @@ public class MainController implements Initializable {
 
 			}
 
+		});
+
+		// Mouse-Control
+
+		// [!!!Caution!!!] - causes Windows 10 to hang up
+		/*
+		 * rootPane.setOnMouseDragged(e -> {
+		 * 
+		 * if(e.getButton().equals(MouseButton.SECONDARY)) {
+		 * 
+		 * Rectangle2D rect = Screen.getPrimary().getBounds(); try { Robot robot = new
+		 * Robot(); robot.mouseMove((int)rect.getWidth()/2, (int)rect.getHeight()/2); }
+		 * catch (AWTException e1) { // TODO Auto-generated catch block
+		 * e1.printStackTrace(); }
+		 * 
+		 * double x = e.getScreenX()-rect.getWidth()/2; System.out.println(x);
+		 * 
+		 * if(x > 0) {
+		 * 
+		 * cam.setYaw(cam.getYaw() - 0.1); render(mainRenderer, mainScene, mainWriter);
+		 * 
+		 * }else if(x < 0){
+		 * 
+		 * cam.setYaw(cam.getYaw() + 0.1); render(mainRenderer, mainScene, mainWriter);
+		 * 
+		 * }
+		 * 
+		 * }
+		 * 
+		 * });
+		 */
+
+		// Mouse Control (without capturing mouse)
+		rootPane.setOnMouseDragged(e -> {
+
+			double x = prevMouseX - e.getScreenX();
+			double y = prevMouseY - e.getScreenY();
+
+			cam.setYaw(cam.getYaw() + x * 0.25);
+			cam.setPitch(cam.getPitch() + -(y * 0.25));
+
+			renderMain();
+
+			prevMouseX = e.getScreenX();
+			prevMouseY = e.getScreenY();
+		});
+
+		rootPane.setOnMousePressed(e -> {
+			prevMouseX = e.getScreenX();
+			prevMouseY = e.getScreenY();
 		});
 
 		canvasPane.setOnMouseClicked(e -> {
@@ -1176,7 +1230,7 @@ public class MainController implements Initializable {
 
 	}
 
-	private void moveNoises(Point3D direction) {
+	private void moveNoisesDown(Point3D direction) {
 
 		Point3D pos = mainScene.getCamera().getPosition();
 		Point3D lookDir = mainScene.getCamera().getLookDir();
@@ -1186,6 +1240,7 @@ public class MainController implements Initializable {
 			if (shape instanceof RenNoise) {
 
 				RenNoise noiseShape = (RenNoise) shape;
+				NoiseGenerator2D noise = noiseShape.getNoise();
 
 				if (noiseShape.isDynamic()) {
 
@@ -1196,30 +1251,46 @@ public class MainController implements Initializable {
 
 					if (lookDir.getZ() > 0) {
 
-						noiseShape.setOffsetY(noiseShape.getOffsetY() + 1 * lookDir.getZ());
+						noiseShape.setOffsetY(noiseShape.getOffsetY() + 1);
 						RenUtilities.shiftArrDown(grid.getGrid(), grid.getAmountX(), grid.getAmountY());
 
 						double yoff = (grid.getAmountY() - 1) + noiseShape.getOffsetY();
-						
+
 						for (int x = 0; x < grid.getAmountX(); x++) {
-							
-							grid.setVal(x, grid.getAmountY() - 1, noiseShape.getNoise().realNoise(
-									(x * noiseShape.getIncrement()), (yoff * noiseShape.getIncrement())));
+
+							double sum = noiseShape.getNoise().realNoise(x, yoff);
+							if (sum > noiseShape.getMaxHeight())
+								sum = noiseShape.getMaxHeight()
+										+ noise.realNoise(x, yoff) / (noise.getAmplitude() * noise.getOctaves() * 5);
+
+							if (sum < noiseShape.getMinHeight())
+								sum = noiseShape.getMinHeight()
+										- -noise.realNoise(x, yoff) / (noise.getAmplitude() * noise.getOctaves() * 5);
+
+							grid.setVal(x, grid.getAmountY() - 1, sum);
 
 						}
 
 					} else {
 
-						noiseShape.setOffsetY(noiseShape.getOffsetY() - 1 * lookDir.getZ());
+						noiseShape.setOffsetY(noiseShape.getOffsetY() - 1);
 						RenUtilities.shiftArrUp(grid.getGrid(), grid.getAmountX(), grid.getAmountY());
 
 						double yoff = (grid.getAmountY() - 1) + noiseShape.getOffsetY();
-						
+						double y = yoff - grid.getAmountY();
+
 						for (int x = 0; x < grid.getAmountX(); x++) {
 
-							grid.setVal(x, 0, noiseShape.getNoise().realNoise(
-									(x * noiseShape.getIncrement()),
-									((yoff - (grid.getAmountY())) * noiseShape.getIncrement())));
+							double sum = noiseShape.getNoise().realNoise(x, y);
+							if (sum > noiseShape.getMaxHeight())
+								sum = noiseShape.getMaxHeight()
+										+ noise.realNoise(x, y) / (noise.getAmplitude() * noise.getOctaves() * 5);
+
+							if (sum < noiseShape.getMinHeight())
+								sum = noiseShape.getMinHeight()
+										- -noise.realNoise(x, y) / (noise.getAmplitude() * noise.getOctaves() * 5);
+
+							grid.setVal(x, 0, sum);
 
 						}
 

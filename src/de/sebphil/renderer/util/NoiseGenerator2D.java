@@ -8,18 +8,18 @@ import javafx.scene.paint.Color;
 public class NoiseGenerator2D {
 
 	private double frequency, amplitude, freqMult, amplMult;
-	private int tableLength, layers;
+	private int tableLength, octaves;
 	private int[] permTable;
-	private Point2D gard[];
+	private Point2D[] gard;
 	private Random ran;
 
 	public NoiseGenerator2D(long seed) {
 
-		frequency = 1;
+		frequency = 0.2;
 		amplitude = 1;
 		freqMult = 1;
 		amplMult = 1;
-		layers = 1;
+		octaves = 1;
 		tableLength = 256;
 		permTable = new int[tableLength * 2];
 		gard = new Point2D[tableLength];
@@ -43,7 +43,7 @@ public class NoiseGenerator2D {
 		if (frequency < 0)
 			return 0;
 
-		int layers = this.layers;
+		int layers = this.octaves;
 
 		double frequency = this.frequency;
 		double amplitude = this.amplitude;
@@ -65,14 +65,14 @@ public class NoiseGenerator2D {
 	}
 
 	public double getNoiseGray(double sum) {
-		return Math.abs(map(-1, 1, sum / layers, 0, 1) % 1);
+		return Math.abs(map(-1, 1, sum / octaves, 0, 1) % 1);
 	}
 
 	public Color getNoiseRGB(double sum) {
 
 		Color color = Color.DARKBLUE;
 
-		double value = map(-1 * amplitude * layers, 1 * amplitude * layers, sum, -0.2, 1);
+		double value = map(-1 * amplitude * octaves, 1 * amplitude * octaves, sum, -0.2, 1);
 
 		if (value <= 0.1) {
 			color = Color.web("#0a0075").interpolate(Color.web("#00b4eb"), value / 0.1);
@@ -83,7 +83,7 @@ public class NoiseGenerator2D {
 		} else if (value <= 0.7) {
 			color = Color.web("#b2ed02").interpolate(Color.web("#e1eb8d"), value / 0.7);
 		} else {
-			color = Color.web("#e1eb8d").interpolate(Color.web("#cf7800"), value / 1.1);
+			color = Color.web("#F2F6CE").interpolate(Color.web("#cf7800"), value / 1.1);
 		}
 
 		return color;
@@ -131,7 +131,7 @@ public class NoiseGenerator2D {
 		return a + c * (b - a);
 	}
 
-	private double map(double a, double b, double x, double c, double d) {
+	private static double map(double a, double b, double x, double c, double d) {
 		return (x - a) / (b - a) * (d - c) + c;
 	}
 
@@ -175,12 +175,12 @@ public class NoiseGenerator2D {
 		this.tableLength = tableLength;
 	}
 
-	public int getLayers() {
-		return layers;
+	public int getOctaves() {
+		return octaves;
 	}
 
-	public void setLayers(int layers) {
-		this.layers = layers;
+	public void setOctaves(int layers) {
+		this.octaves = layers;
 	}
 
 	public void setSeed(long seed) {

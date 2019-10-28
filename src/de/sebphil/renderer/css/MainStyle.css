@@ -124,6 +124,25 @@
 	-fx-background-color: #4472a6;
 }
 
+.choice-box{
+	-fx-background-color: transparent;
+	-fx-border-width: 0 0 1 0;
+	-fx-border-color: #919191;
+}
+
+.choice-box:hover{
+	-fx-cursor: hand;
+}
+
+.choice-box .menu-item:hover{
+	-fx-background-color: #4c5866;
+ 	-fx-cursor: hand;
+}
+
+.choice-box .label{
+	-fx-text-fill: #dbdbdb;
+}
+
 #optionBox{
 	-fx-background-color: #333333;
 }

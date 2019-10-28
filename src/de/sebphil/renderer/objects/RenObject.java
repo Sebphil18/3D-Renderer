@@ -21,12 +21,12 @@ public class RenObject {
 	protected static double[][] generateRotXMat(double angleX) {
 
 		double[][] rotMat = new double[4][4];
-		rotMat[0][0] = 1.0f;
+		rotMat[0][0] = 1;
 		rotMat[1][1] = Math.cos(angleX);
 		rotMat[1][2] = Math.sin(angleX);
 		rotMat[2][1] = -Math.sin(angleX);
 		rotMat[2][2] = Math.cos(angleX);
-		rotMat[3][3] = 1.0f;
+		rotMat[3][3] = 1;
 		return rotMat;
 	}
 
@@ -38,6 +38,7 @@ public class RenObject {
 		rotMat[1][0] = -Math.sin(angleZ);
 		rotMat[1][1] = Math.cos(angleZ);
 		rotMat[2][2] = 1;
+		rotMat[3][3] = 1;
 		return rotMat;
 	}
 
@@ -47,9 +48,9 @@ public class RenObject {
 		rotMat[0][0] = Math.cos(angleY);
 		rotMat[0][2] = Math.sin(angleY);
 		rotMat[2][0] = -Math.sin(angleY);
-		rotMat[1][1] = 1.0;
+		rotMat[1][1] = 1;
 		rotMat[2][2] = Math.cos(angleY);
-		rotMat[3][3] = 1.0;
+		rotMat[3][3] = 1;
 		return rotMat;
 	}
 

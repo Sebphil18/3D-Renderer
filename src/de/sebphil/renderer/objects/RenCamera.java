@@ -82,6 +82,10 @@ public class RenCamera extends RenObject {
 	}
 
 	public void setPitch(double pitch) {
+
+		if (pitch >= 80 || pitch <= -80)
+			return;
+
 		setAngleX(pitch);
 		setRotXMat(generateRotXMat(Math.toRadians(pitch % 360)));
 

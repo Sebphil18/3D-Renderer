@@ -90,11 +90,13 @@ public class ResGrid {
 	}
 
 	public void fillCell(int x, int y, GraphicsContext gc) {
+		
 		if (showGrid.getValue()) {
 			gc.fillRect(x * width.getValue() + 1, y * width.getValue() + 1, width.getValue() - 2, width.getValue() - 2);
 		} else {
 			gc.fillRect(x * width.getValue(), y * width.getValue(), width.getValue(), width.getValue());
 		}
+		
 	}
 
 	public double getVal(int x, int y) {

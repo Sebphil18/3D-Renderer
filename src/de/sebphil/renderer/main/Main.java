@@ -3,6 +3,7 @@ package de.sebphil.renderer.main;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
@@ -25,6 +26,7 @@ public class Main extends Application {
 		Stage primaryStage = new Stage();
 		primaryStage.setScene(scene);
 		primaryStage.setTitle("3D Renderer");
+		primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/de/sebphil/renderer/pics/SAvatar.png")));
 		primaryStage.show();
 
 	}
