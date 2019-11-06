@@ -135,7 +135,12 @@ public class MainController implements Initializable {
 		mainWriter = gc.getPixelWriter();
 		mainRenderer = new SebRenderer(canvas.getWidth(), canvas.getHeight());
 		mainScene = new RenScene();
-
+		
+		RenObject light = new RenObject("light");
+		light.setPosition(new Point3D(1, 1, -1));
+		
+		addObject(lightItem, light);
+		
 		widthProp.addListener(l -> {
 
 			widthLabel.setText(Double.toString(widthProp.doubleValue()));
@@ -173,8 +178,7 @@ public class MainController implements Initializable {
 				mainRenderer.setNear(Double.valueOf(nearField.getText()));
 				render(mainRenderer, mainScene, mainWriter);
 
-			} else
-				nearField.setText(Double.toString(mainRenderer.getNear()));
+			}
 
 		});
 
@@ -185,8 +189,7 @@ public class MainController implements Initializable {
 				mainRenderer.setFar(Double.valueOf(farField.getText()));
 				render(mainRenderer, mainScene, mainWriter);
 
-			} else
-				farField.setText(Double.toString(mainRenderer.getFar()));
+			}
 
 		});
 
@@ -203,8 +206,7 @@ public class MainController implements Initializable {
 
 				fovProp.set(fov);
 
-			} else
-				fovField.setText(Double.toString(fovProp.doubleValue()));
+			}
 
 		});
 
@@ -533,11 +535,11 @@ public class MainController implements Initializable {
 		posPane.setHgap(10);
 		alignmentGridPane(posPane);
 
-		generatePositionListener(0, posFields, shape, writer);
+		generatePositionListener(posFields, shape, writer);
 
-		posFields[0].textProperty().addListener(generatePositionListener(0, posFields, shape, writer));
-		posFields[1].textProperty().addListener(generatePositionListener(1, posFields, shape, writer));
-		posFields[2].textProperty().addListener(generatePositionListener(2, posFields, shape, writer));
+		posFields[0].textProperty().addListener(generatePositionListener(posFields, shape, writer));
+		posFields[1].textProperty().addListener(generatePositionListener(posFields, shape, writer));
+		posFields[2].textProperty().addListener(generatePositionListener(posFields, shape, writer));
 
 		// Translation
 		Point3D trans = shape.getTranslation();
@@ -555,9 +557,9 @@ public class MainController implements Initializable {
 
 		transPane.setHgap(10);
 
-		transFields[0].textProperty().addListener(generateTransListener(0, transFields, shape, writer));
-		transFields[1].textProperty().addListener(generateTransListener(1, transFields, shape, writer));
-		transFields[2].textProperty().addListener(generateTransListener(2, transFields, shape, writer));
+		transFields[0].textProperty().addListener(generateTransListener(transFields, shape, writer));
+		transFields[1].textProperty().addListener(generateTransListener(transFields, shape, writer));
+		transFields[2].textProperty().addListener(generateTransListener(transFields, shape, writer));
 
 		// Rotation
 		Label title3 = new Label("Rotation");
@@ -574,9 +576,9 @@ public class MainController implements Initializable {
 
 		rotPane.setHgap(10);
 
-		rotFields[0].textProperty().addListener(generateRotListener(0, rotFields, shape, writer));
-		rotFields[1].textProperty().addListener(generateRotListener(1, rotFields, shape, writer));
-		rotFields[2].textProperty().addListener(generateRotListener(2, rotFields, shape, writer));
+		rotFields[0].textProperty().addListener(generateRotListener(rotFields, shape, writer));
+		rotFields[1].textProperty().addListener(generateRotListener(rotFields, shape, writer));
+		rotFields[2].textProperty().addListener(generateRotListener(rotFields, shape, writer));
 
 		// Size
 		Point3D size = shape.getSize();
@@ -594,9 +596,9 @@ public class MainController implements Initializable {
 
 		sizePane.setHgap(10);
 
-		sizeFields[0].textProperty().addListener(generateSizeListener(0, sizeFields, shape, writer));
-		sizeFields[1].textProperty().addListener(generateSizeListener(1, sizeFields, shape, writer));
-		sizeFields[2].textProperty().addListener(generateSizeListener(2, sizeFields, shape, writer));
+		sizeFields[0].textProperty().addListener(generateSizeListener(sizeFields, shape, writer));
+		sizeFields[1].textProperty().addListener(generateSizeListener(sizeFields, shape, writer));
+		sizeFields[2].textProperty().addListener(generateSizeListener(sizeFields, shape, writer));
 
 		// Color
 		Label title5 = new Label("Color");
@@ -630,7 +632,7 @@ public class MainController implements Initializable {
 		copyShape.setAngleY(0);
 		copyShape.setAngleZ(0);
 
-		preCam.setPosition(new Point3D(0, 0, -dZ));
+		preCam.setPosition(new Point3D(0, 0, -dZ*3));
 		preScene.getShapes().add(copyShape);
 		preScene.getLights().add(new Point3D(0, 1, -1));
 		preScene.setCamera(preCam);
@@ -794,9 +796,9 @@ public class MainController implements Initializable {
 
 		posPane.setHgap(10);
 
-		fields[0].textProperty().addListener(generatePositionListener(0, fields, renObj, mainWriter));
-		fields[1].textProperty().addListener(generatePositionListener(1, fields, renObj, mainWriter));
-		fields[2].textProperty().addListener(generatePositionListener(2, fields, renObj, mainWriter));
+		fields[0].textProperty().addListener(generatePositionListener(fields, renObj, mainWriter));
+		fields[1].textProperty().addListener(generatePositionListener(fields, renObj, mainWriter));
+		fields[2].textProperty().addListener(generatePositionListener(fields, renObj, mainWriter));
 
 		lightBox.setPadding(new Insets(5, 6, 5, 5));
 		lightBox.setMinWidth(200);
@@ -892,8 +894,7 @@ public class MainController implements Initializable {
 		menu.show(rootPane.getScene().getWindow());
 	}
 
-	private ChangeListener<String> generatePositionListener(int index, TextField[] fields, RenObject renObj,
-			PixelWriter writer) {
+	private ChangeListener<String> generatePositionListener(TextField[] fields, RenObject renObj, PixelWriter writer) {
 		return new ChangeListener<String>() {
 
 			@Override
@@ -915,21 +916,12 @@ public class MainController implements Initializable {
 
 					render(mainRenderer, mainScene, writer);
 
-				} else {
-
-					if (index == 0)
-						fields[index].setText(renObj.getPosition().getX() + "");
-					if (index == 1)
-						fields[index].setText(renObj.getPosition().getY() + "");
-					if (index == 2)
-						fields[index].setText(renObj.getPosition().getZ() + "");
 				}
 			}
 		};
 	}
 
-	private ChangeListener<String> generateTransListener(int index, TextField[] fields, RenShape shape,
-			PixelWriter writer) {
+	private ChangeListener<String> generateTransListener(TextField[] fields, RenShape shape, PixelWriter writer) {
 		return new ChangeListener<String>() {
 
 			@Override
@@ -940,20 +932,12 @@ public class MainController implements Initializable {
 					shape.setTranslation(new Point3D(Double.valueOf(fields[0].getText()),
 							Double.valueOf(fields[1].getText()), Double.valueOf(fields[2].getText())));
 					render(mainRenderer, mainScene, writer);
-				} else {
-					if (index == 0)
-						fields[index].setText(shape.getTranslation().getX() + "");
-					if (index == 1)
-						fields[index].setText(shape.getTranslation().getY() + "");
-					if (index == 2)
-						fields[index].setText(shape.getTranslation().getZ() + "");
 				}
 			}
 		};
 	}
 
-	private ChangeListener<String> generateRotListener(int index, TextField[] fields, RenObject renObj,
-			PixelWriter writer) {
+	private ChangeListener<String> generateRotListener(TextField[] fields, RenObject renObj, PixelWriter writer) {
 		return new ChangeListener<String>() {
 
 			@Override
@@ -965,20 +949,12 @@ public class MainController implements Initializable {
 					renObj.setAngleY(Double.valueOf(fields[1].getText()));
 					renObj.setAngleZ(Double.valueOf(fields[2].getText()));
 					render(mainRenderer, mainScene, writer);
-				} else {
-					if (index == 0)
-						fields[index].setText(renObj.getAngleX() + "");
-					if (index == 1)
-						fields[index].setText(renObj.getAngleY() + "");
-					if (index == 2)
-						fields[index].setText(renObj.getAngleZ() + "");
 				}
 			}
 		};
 	}
 
-	private ChangeListener<String> generateSizeListener(int index, TextField[] fields, RenShape shape,
-			PixelWriter writer) {
+	private ChangeListener<String> generateSizeListener(TextField[] fields, RenShape shape, PixelWriter writer) {
 		return new ChangeListener<String>() {
 
 			@Override
@@ -989,13 +965,6 @@ public class MainController implements Initializable {
 					shape.setSize(new Point3D(Double.valueOf(fields[0].getText()), Double.valueOf(fields[1].getText()),
 							Double.valueOf(fields[2].getText())));
 					render(mainRenderer, mainScene, writer);
-				} else {
-					if (index == 0)
-						fields[index].setText(shape.getSize().getX() + "");
-					if (index == 1)
-						fields[index].setText(shape.getSize().getY() + "");
-					if (index == 2)
-						fields[index].setText(shape.getSize().getZ() + "");
 				}
 			}
 		};
@@ -1115,10 +1084,6 @@ public class MainController implements Initializable {
 		renderer.update(scene);
 		renderer.draw(writer);
 		long stop = System.currentTimeMillis();
-
-		if ((stop - start) / 1000 == 0) {
-			return Double.POSITIVE_INFINITY;
-		}
 
 		return 1 / ((double) (stop - start) / 1000);
 	}

@@ -90,7 +90,7 @@
                            <children>
                               <Label text="author: Sebastian Schulz" />
                               <Label text="license: GNU General Public License v3.0" />
-                              <Label text="version: 1.1.4" />
+                              <Label text="version: 1.1.5" />
                            </children>
                         </VBox>
                      </content>

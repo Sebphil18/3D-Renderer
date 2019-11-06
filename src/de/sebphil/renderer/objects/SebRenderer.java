@@ -28,8 +28,8 @@ public class SebRenderer {
 		this.far = 500;
 		this.fov = 35;
 
-		this.scaleX = 60;
-		this.scaleY = 60;
+		this.scaleX = 100;
+		this.scaleY = 100;
 
 		this.framebuffer = new int[(int) (width * height)];
 		this.depthBuffer = new double[(int) (width * height)];
@@ -38,7 +38,7 @@ public class SebRenderer {
 		this.projMat = generateProjMat();
 
 		this.format = PixelFormat.getIntArgbPreInstance();
-
+		
 		refreshBuffer();
 	}
 
@@ -59,7 +59,7 @@ public class SebRenderer {
 		for (RenShape shape : scene.getShapes()) {
 
 			double[][] transMat = RenShape.generateTransformationMat(shape);
-
+			
 			for (RenTriangle tri : shape.getPolys()) {
 
 				Point3D[] vert = tri.getVert();
@@ -331,8 +331,8 @@ public class SebRenderer {
 
 		scale = 1 / Math.tan(Math.toRadians(fov) / 2);
 
-		projMat[0][0] = scale / aspectratio;
-		projMat[1][1] = -scale;
+		projMat[0][0] = scale * aspectratio;
+		projMat[1][1] = -scale * aspectratio;
 		projMat[2][2] = far / (far - near);
 		projMat[3][2] = -far * near / (far - near);
 		projMat[2][3] = 1;
@@ -351,16 +351,16 @@ public class SebRenderer {
 		
 		refreshBuffer();
 
-		projMat[0][0] = scale / aspectratio;
-		projMat[1][1] = -scale;
+		projMat[0][0] = scale * aspectratio;
+		projMat[1][1] = -scale* aspectratio;
 	}
 
 	public void setFov(double fov) {
 		this.fov = fov;
 		scale = 1 / Math.tan(Math.toRadians(fov) / 2);
 
-		projMat[0][0] = scale / aspectratio;
-		projMat[1][1] = -scale;
+		projMat[0][0] = scale * aspectratio;
+		projMat[1][1] = -scale* aspectratio;
 	}
 
 	public void setNear(double near) {
