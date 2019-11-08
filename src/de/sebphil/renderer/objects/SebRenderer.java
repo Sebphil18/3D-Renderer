@@ -57,7 +57,7 @@ public class SebRenderer {
 		double[][] camView = camera.lookAt(to);
 
 		for (RenShape shape : scene.getShapes()) {
-
+			
 			double[][] transMat = RenShape.generateTransformationMat(shape);
 			
 			for (RenTriangle tri : shape.getPolys()) {

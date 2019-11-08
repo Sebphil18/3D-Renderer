@@ -260,7 +260,7 @@ public class MainController implements Initializable {
 			} else if (e.getCode().equals(KeyCode.D)) {
 				cam.setYaw(cam.getYaw() - 1);
 			}
-
+			
 			render(mainRenderer, mainScene, mainWriter);
 
 		});

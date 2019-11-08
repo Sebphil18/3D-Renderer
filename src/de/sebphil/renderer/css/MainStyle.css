@@ -31,6 +31,7 @@
 }
 .tree-cell{
 	-fx-background-color: #333333;
+	-fx-wrap-text: true;
 }
 .slider .track{
 	-fx-background-color: gray;

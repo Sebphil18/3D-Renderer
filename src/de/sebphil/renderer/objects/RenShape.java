@@ -144,9 +144,9 @@ public class RenShape extends RenObject {
 	}
 
 	protected static double[][] generateTransformationMat(RenShape shape) {
-		double[][] transf = RenUtilities.multMatMat(RenObject.generateRotZMat(Math.toRadians(shape.getAngleZ())),
+		double[][] transf = RenUtilities.multMatMat(RenObject.generateRotXMat(Math.toRadians(shape.getAngleZ())),
 				RenObject.generateRotYMat(Math.toRadians(shape.getAngleY())));
-		transf = RenUtilities.multMatMat(transf, RenObject.generateRotXMat(Math.toRadians(shape.getAngleX())));
+		transf = RenUtilities.multMatMat(transf, RenObject.generateRotZMat(Math.toRadians(shape.getAngleX())));
 		transf = RenUtilities.multMatMat(RenShape.generateTransMat(shape.getTranslation()), transf);
 		return transf;
 	}
