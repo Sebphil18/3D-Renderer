@@ -293,37 +293,7 @@ public class MainController implements Initializable {
 
 		});
 
-		// Mouse-Control
-
-		// [!!!Caution!!!] - causes Windows 10 to hang up
-		/*
-		 * rootPane.setOnMouseDragged(e -> {
-		 * 
-		 * if(e.getButton().equals(MouseButton.SECONDARY)) {
-		 * 
-		 * Rectangle2D rect = Screen.getPrimary().getBounds(); try { Robot robot = new
-		 * Robot(); robot.mouseMove((int)rect.getWidth()/2, (int)rect.getHeight()/2); }
-		 * catch (AWTException e1) { // TODO Auto-generated catch block
-		 * e1.printStackTrace(); }
-		 * 
-		 * double x = e.getScreenX()-rect.getWidth()/2; System.out.println(x);
-		 * 
-		 * if(x > 0) {
-		 * 
-		 * cam.setYaw(cam.getYaw() - 0.1); render(mainRenderer, mainScene, mainWriter);
-		 * 
-		 * }else if(x < 0){
-		 * 
-		 * cam.setYaw(cam.getYaw() + 0.1); render(mainRenderer, mainScene, mainWriter);
-		 * 
-		 * }
-		 * 
-		 * }
-		 * 
-		 * });
-		 */
-
-		// Mouse Control (without capturing mouse)
+		// Mouse Control
 		rootPane.setOnMouseDragged(e -> {
 
 			double x = prevMouseX - e.getScreenX();

@@ -36,7 +36,7 @@ public class RenNoise extends RenShape {
 	public void generatePolyMesh(boolean colored) {
 
 		super.getPolys().clear();
-
+		
 		for (int x = 0; x < grid.getAmountX() - 1; x++) {
 			for (int y = 0; y < grid.getAmountY() - 1; y++) {
 
@@ -44,15 +44,15 @@ public class RenNoise extends RenShape {
 				Point3D v2 = new Point3D(((x + 1) - grid.getAmountX() / 2), grid.getVal(x + 1, y) * 5, y);
 				Point3D v3 = new Point3D(((x + 1) - grid.getAmountX() / 2), grid.getVal(x + 1, y + 1) * 5, (y + 1));
 				Point3D v4 = new Point3D((x - grid.getAmountX() / 2), grid.getVal(x, y + 1) * 5, (y + 1));
-
+				
 				Color color = super.getColor();
 
 				if (colored)
 					color = noise.getNoiseRGB(grid.getVal(x, y));
-
+				
 				super.getPolys().add(new RenTriangle(v4, v2, v1, color));
 				super.getPolys().add(new RenTriangle(v3, v2, v4, color));
-
+				
 			}
 		}
 

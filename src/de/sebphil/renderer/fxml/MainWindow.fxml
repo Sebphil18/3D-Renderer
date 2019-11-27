@@ -89,8 +89,9 @@
                         <VBox>
                            <children>
                               <Label text="author: Sebastian Schulz" />
+                              <Label text="credit: Hr. Rösner" />
                               <Label text="license: GNU General Public License v3.0" />
-                              <Label text="version: 1.1.5" />
+                              <Label text="version: 1.1.7" />
                            </children>
                         </VBox>
                      </content>

@@ -58,14 +58,19 @@ public class NoiseGenerator2D {
 			frequency *= freqMult;
 			amplitude *= amplMult;
 
-		}
-
+		} 
+		
 		return sum;
-
 	}
 
 	public double getNoiseGray(double sum) {
-		return Math.abs(map(-1, 1, sum / octaves, 0, 1) % 1);
+		
+		double grayscale = map(-1, 1, sum/octaves, 0, 1);
+		
+		if(grayscale < 0) grayscale = 0;
+		else if (grayscale > 1) grayscale = 1;
+		
+		return grayscale;
 	}
 
 	public Color getNoiseRGB(double sum) {

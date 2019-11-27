@@ -452,7 +452,9 @@ public class NoiseController implements Initializable {
 	private void fillGrid(NoiseGenerator2D noise, ResGrid grid, GraphicsContext gc, RenNoise noiseShape) {
 
 		gc.clearRect(0, 0, canvasPane.getWidth(), canvasPane.getHeight());
-
+		
+		double maxValue = 0;
+		
 		for (int x = 0; x < grid.getAmountX(); x++) {
 			for (int y = 0; y < grid.getAmountY(); y++) {
 
@@ -467,7 +469,9 @@ public class NoiseController implements Initializable {
 							- -noise.realNoise(x, y) / (noise.getAmplitude() * noise.getOctaves() * 5);
 
 				grid.setVal(x, y, sum);
-
+				
+				if(sum > maxValue) maxValue = sum;
+				
 				if (colorCheck.isSelected()) {
 					gc.setFill(noise.getNoiseRGB(sum));
 				} else {

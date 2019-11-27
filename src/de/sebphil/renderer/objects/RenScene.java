@@ -12,7 +12,7 @@ public class RenScene {
 	private ObservableList<Point3D> lights;
 
 	public RenScene() {
-		this.ambient = 0.1;
+		this.ambient = 0.05;
 		this.camera = new RenCamera("camera");
 		this.shapes = FXCollections.observableArrayList();
 		this.lights = FXCollections.observableArrayList();

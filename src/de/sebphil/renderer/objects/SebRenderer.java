@@ -26,10 +26,10 @@ public class SebRenderer {
 
 		this.near = 0.1;
 		this.far = 500;
-		this.fov = 35;
+		this.fov = 60;
 
-		this.scaleX = 100;
-		this.scaleY = 100;
+		this.scaleX = 360;
+		this.scaleY = 360;
 
 		this.framebuffer = new int[(int) (width * height)];
 		this.depthBuffer = new double[(int) (width * height)];
@@ -329,12 +329,12 @@ public class SebRenderer {
 
 		double[][] projMat = new double[4][4];
 
-		scale = 1 / Math.tan(Math.toRadians(fov) / 2);
+		scale = Math.tan(Math.toRadians(fov) / 2);
 
-		projMat[0][0] = scale * aspectratio;
-		projMat[1][1] = -scale * aspectratio;
+		projMat[0][0] = 1 / (scale * aspectratio);
+		projMat[1][1] = -1 / scale;
 		projMat[2][2] = far / (far - near);
-		projMat[3][2] = -far * near / (far - near);
+		projMat[3][2] = -(far * near) / (far - near);
 		projMat[2][3] = 1;
 
 		return projMat;
@@ -351,30 +351,30 @@ public class SebRenderer {
 		
 		refreshBuffer();
 
-		projMat[0][0] = scale * aspectratio;
-		projMat[1][1] = -scale* aspectratio;
+		projMat[0][0] = 1 / (scale * aspectratio);
+		projMat[1][1] = -1 / scale;
 	}
 
 	public void setFov(double fov) {
 		this.fov = fov;
-		scale = 1 / Math.tan(Math.toRadians(fov) / 2);
+		scale = Math.tan(Math.toRadians(fov) / 2);
 
-		projMat[0][0] = scale * aspectratio;
-		projMat[1][1] = -scale* aspectratio;
+		projMat[0][0] = 1 / (scale * aspectratio);
+		projMat[1][1] = -1 / scale;
 	}
 
 	public void setNear(double near) {
 		this.near = near;
 
 		projMat[2][2] = far / (far - near);
-		projMat[3][2] = -far * near / (far - near);
+		projMat[3][2] = -(far * near) / (far - near);
 	}
 
 	public void setFar(double far) {
 		this.far = far;
-
+		
 		projMat[2][2] = far / (far - near);
-		projMat[3][2] = -far * near / (far - near);
+		projMat[3][2] = -(far * near) / (far - near);
 	}
 
 	public double getWidth() {

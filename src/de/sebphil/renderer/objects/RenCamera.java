@@ -38,10 +38,8 @@ public class RenCamera extends RenObject {
 		newUp = up.subtract(newForward.multiply(up.dotProduct(newForward))).normalize();
 		newRight = newUp.crossProduct(newForward);
 
-		if ((forward.getY() >= 0.9 && forward.getY() <= 1.1) && (forward.getY() >= -0.9 && forward.getY() <= -1.1)) {
-			forward = new Point3D(forward.getX(), forward.getY() + 0.15, forward.getZ());
-			System.out.println("forward corrected");
-		}
+		if ((forward.getY() >= 0.9 && forward.getY() <= 1.1) || (forward.getY() >= -0.9 && forward.getY() <= -1.1)) 
+			forward = new Point3D(forward.getX(), forward.getY() + 0.2, forward.getZ());
 
 		camWorldMat[0][0] = newRight.getX();
 		camWorldMat[0][1] = newRight.getY();
@@ -75,19 +73,18 @@ public class RenCamera extends RenObject {
 
 	public void setYaw(double yaw) {
 		setAngleY(yaw);
-		setRotYMat(generateRotYMat(Math.toRadians(yaw)));
-		
+		setRotYMat(generateRotYMat(Math.toRadians(yaw % 360)));
+
 		camRotMat = RenUtilities.multMatMat(getRotXMat(), getRotYMat());
 		camRotMat = RenUtilities.multMatMat(camRotMat, getRotZMat());
 	}
 
 	public void setPitch(double pitch) {
-
-		if (pitch >= 80 || pitch <= -80)
-			return;
-
+		
+		if(pitch % 360 >= 89) return;
+		
 		setAngleX(pitch);
-		setRotXMat(generateRotXMat(Math.toRadians(pitch)));
+		setRotXMat(generateRotXMat(Math.toRadians(pitch % 360)));
 		
 		camRotMat = RenUtilities.multMatMat(getRotXMat(), getRotYMat());
 		camRotMat = RenUtilities.multMatMat(camRotMat, getRotZMat());
