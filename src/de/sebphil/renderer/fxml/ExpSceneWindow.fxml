@@ -7,7 +7,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="195.0" prefWidth="423.0" style="-fx-background-color: #474747;" stylesheets="@../css/MainStyle.css" xmlns="http://javafx.com/javafx/1.8.0.191" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.sebphil.renderer.controllers.ExportSceneController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="195.0" prefWidth="423.0" style="-fx-background-color: #474747;" stylesheets="@../css/MainStyle.css" xmlns="http://javafx.com/javafx/1.8.0.191" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.sebphil.renderer.controller.ExportSceneController">
    <children>
       <Label id="title" layoutX="14.0" layoutY="14.0" text="exporting Scene" />
       <Separator layoutX="14.0" layoutY="46.0" prefHeight="9.0" prefWidth="261.0" />

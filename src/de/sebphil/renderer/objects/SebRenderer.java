@@ -323,6 +323,7 @@ public class SebRenderer {
 		double opacity = color.getOpacity() * shade;
 
 		return new Color(opacity, Math.abs(red), Math.abs(green), Math.abs(blue));
+		
 	}
 
 	private double[][] generateProjMat() {
@@ -332,7 +333,7 @@ public class SebRenderer {
 		scale = Math.tan(Math.toRadians(fov) / 2);
 
 		projMat[0][0] = 1 / (scale * aspectratio);
-		projMat[1][1] = -1 / scale;
+		projMat[1][1] = -1 / (scale * aspectratio);
 		projMat[2][2] = far / (far - near);
 		projMat[3][2] = -(far * near) / (far - near);
 		projMat[2][3] = 1;
@@ -352,7 +353,7 @@ public class SebRenderer {
 		refreshBuffer();
 
 		projMat[0][0] = 1 / (scale * aspectratio);
-		projMat[1][1] = -1 / scale;
+		projMat[1][1] = -1 / (scale * aspectratio);
 	}
 
 	public void setFov(double fov) {
@@ -360,7 +361,7 @@ public class SebRenderer {
 		scale = Math.tan(Math.toRadians(fov) / 2);
 
 		projMat[0][0] = 1 / (scale * aspectratio);
-		projMat[1][1] = -1 / scale;
+		projMat[1][1] = -1 / (scale * aspectratio);
 	}
 
 	public void setNear(double near) {

@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="717.0" prefWidth="1076.0" stylesheets="@../css/MainStyle.css" xmlns="http://javafx.com/javafx/1.8.0.191" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.sebphil.renderer.controllers.MainController">
+<BorderPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="717.0" prefWidth="1076.0" stylesheets="@../css/MainStyle.css" xmlns="http://javafx.com/javafx/1.8.0.191" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.sebphil.renderer.controller.MainController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
@@ -91,7 +91,7 @@
                               <Label text="author: Sebastian Schulz" />
                               <Label text="credit: Hr. Rösner" />
                               <Label text="license: GNU General Public License v3.0" />
-                              <Label text="version: 1.1.7" />
+                              <Label text="version: 1.1.8" />
                            </children>
                         </VBox>
                      </content>

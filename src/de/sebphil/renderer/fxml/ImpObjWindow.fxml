@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" style="-fx-background-color: #474747;" stylesheets="@../css/MainStyle.css" xmlns="http://javafx.com/javafx/1.8.0.191" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.sebphil.renderer.controllers.ImpObjController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" style="-fx-background-color: #474747;" stylesheets="@../css/MainStyle.css" xmlns="http://javafx.com/javafx/1.8.0.191" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.sebphil.renderer.controller.ImpObjController">
    <bottom>
       <AnchorPane prefHeight="141.0" prefWidth="366.0" BorderPane.alignment="CENTER">
          <children>

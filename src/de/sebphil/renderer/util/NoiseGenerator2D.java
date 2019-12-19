@@ -37,7 +37,7 @@ public class NoiseGenerator2D {
 		}
 
 	}
-
+	
 	public double realNoise(double x, double y) {
 
 		if (frequency < 0)
@@ -100,7 +100,7 @@ public class NoiseGenerator2D {
 		int fy1 = (int) (Math.floor(y) % tableLength);
 		int fx2 = (fx1 + 1) % tableLength;
 		int fy2 = (fy1 + 1) % tableLength;
-
+		
 		double tx = x - Math.floor(x);
 		double ty = y - Math.floor(y);
 
