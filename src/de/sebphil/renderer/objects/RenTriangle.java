@@ -13,7 +13,7 @@ public class RenTriangle {
 	public RenTriangle(Point3D v1, Point3D v2, Point3D v3) {
 		vert = new Point3D[] { v1, v2, v3 };
 	}
-	
+
 	public RenTriangle(Point3D v1, Point3D v2, Point3D v3, Color color) {
 		vert = new Point3D[] { v1, v2, v3 };
 		this.color = color;

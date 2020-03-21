@@ -13,7 +13,6 @@ import javafx.scene.paint.Color;
 public class RenShape extends RenObject {
 
 	private double maxX, maxY, maxZ, minX, minY, minZ;
-	private double[][] sizeMat;
 	private Point3D size, translation;
 	private Color color;
 	private List<RenTriangle> polys;
@@ -21,7 +20,6 @@ public class RenShape extends RenObject {
 	public RenShape(String name) {
 		super(name);
 		this.color = Color.WHITE;
-		this.sizeMat = new double[4][4];
 		this.polys = new ArrayList<RenTriangle>();
 		this.translation = new Point3D(0, 0, 0);
 		this.size = new Point3D(1, 1, 1);
@@ -30,7 +28,6 @@ public class RenShape extends RenObject {
 	public RenShape(String name, Color color) {
 		super(name);
 		this.color = color;
-		this.sizeMat = new double[4][4];
 		this.polys = new ArrayList<RenTriangle>();
 		this.translation = new Point3D(0, 0, 0);
 		this.size = new Point3D(1, 1, 1);
@@ -148,20 +145,12 @@ public class RenShape extends RenObject {
 				RenObject.generateRotYMat(Math.toRadians(shape.getAngleY())));
 		transf = RenUtilities.multMatMat(transf, RenObject.generateRotZMat(Math.toRadians(shape.getAngleX())));
 		transf = RenUtilities.multMatMat(RenShape.generateTransMat(shape.getTranslation()), transf);
+		
 		return transf;
 	}
 
 	public void setSize(Point3D size) {
 		this.size = size;
-		this.sizeMat = generateSizeMat(size);
-	}
-
-	public double[][] getSizeMat() {
-		return sizeMat;
-	}
-
-	public void setSizeMat(double[][] sizeMat) {
-		this.sizeMat = sizeMat;
 	}
 
 	public Color getColor() {
@@ -170,7 +159,7 @@ public class RenShape extends RenObject {
 
 	public void setColor(Color color) {
 		this.color = color;
-		for(RenTriangle tri : getPolys()) {
+		for (RenTriangle tri : getPolys()) {
 			tri.setColor(color);
 		}
 	}

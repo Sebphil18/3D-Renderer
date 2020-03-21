@@ -58,9 +58,7 @@ public class RenCamera extends RenObject {
 		camWorldMat[3][2] = pos.getZ();
 		camWorldMat[3][3] = 1.0;
 
-		double[][] camViewMat = RenUtilities.invertLookAtMat(camWorldMat);
-
-		return camViewMat;
+		return RenUtilities.invertLookAtMat(camWorldMat);
 	}
 
 	public double getYaw() {
@@ -73,7 +71,6 @@ public class RenCamera extends RenObject {
 
 	public void setYaw(double yaw) {
 		setAngleY(yaw);
-		setRotYMat(generateRotYMat(Math.toRadians(yaw % 360)));
 
 		camRotMat = RenUtilities.multMatMat(getRotXMat(), getRotYMat());
 		camRotMat = RenUtilities.multMatMat(camRotMat, getRotZMat());
@@ -84,7 +81,6 @@ public class RenCamera extends RenObject {
 		if(pitch % 360 >= 89) return;
 		
 		setAngleX(pitch);
-		setRotXMat(generateRotXMat(Math.toRadians(pitch % 360)));
 		
 		camRotMat = RenUtilities.multMatMat(getRotXMat(), getRotYMat());
 		camRotMat = RenUtilities.multMatMat(camRotMat, getRotZMat());

@@ -59,6 +59,9 @@ public class RenUtilities {
 
 		double w = vector.getX() * matrix[0][3] + vector.getY() * matrix[1][3] + vector.getZ() * matrix[2][3]
 				+ matrix[3][3];
+
+		// Clip-Space -> NDC-Space
+
 		if (w != 0.0f) {
 			result[0] /= w;
 			result[1] /= w;
@@ -93,19 +96,19 @@ public class RenUtilities {
 		result[0][0] = mat[0][0];
 		result[0][1] = mat[1][0];
 		result[0][2] = mat[2][0];
-		result[0][3] = 0.0f;
+		result[0][3] = 0.0;
 		result[1][0] = mat[0][1];
 		result[1][1] = mat[1][1];
 		result[1][2] = mat[2][1];
-		result[1][3] = 0.0f;
+		result[1][3] = 0.0;
 		result[2][0] = mat[0][2];
 		result[2][1] = mat[1][2];
 		result[2][2] = mat[2][2];
-		result[2][3] = 0.0f;
+		result[2][3] = 0.0;
 		result[3][0] = -(mat[3][0] * result[0][0] + mat[3][1] * result[1][0] + mat[3][2] * result[2][0]);
 		result[3][1] = -(mat[3][0] * result[0][1] + mat[3][1] * result[1][1] + mat[3][2] * result[2][1]);
 		result[3][2] = -(mat[3][0] * result[0][2] + mat[3][1] * result[1][2] + mat[3][2] * result[2][2]);
-		result[3][3] = 1.0f;
+		result[3][3] = 1.0;
 		return result;
 	}
 
@@ -122,31 +125,33 @@ public class RenUtilities {
 		timeline.play();
 
 	}
-	
+
 	public static void shiftArrDown(double[] array, int width, int height) {
-		
-		for(int y=0;y<height-1;y++) {
-		
-			for(int x=0;x<width;x++) {
-				array[y * width + x] = array[(y+1) * width + x];
+
+		for (int y = 0; y < height - 1; y++) {
+
+			for (int x = 0; x < width; x++) {
+				
+				array[y * width + x] = array[(y + 1) * width + x];
+				
 			}
-			
+
 		}
-		
+
 	}
-	
+
 	public static void shiftArrUp(double[] array, int width, int height) {
-		
-		for(int y=height-1;y>0;--y) {
-			
-			for(int x=0;x<width;x++) {
-				
-				array[y * width + x] = array[(y-1) * width + x];
-				
+
+		for (int y = height - 1; y > 0; --y) {
+
+			for (int x = 0; x < width; x++) {
+
+				array[y * width + x] = array[(y - 1) * width + x];
+
 			}
-			
+
 		}
-		
+
 	}
 
 }

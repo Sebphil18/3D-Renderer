@@ -38,7 +38,7 @@ public class SebRenderer {
 		this.projMat = generateProjMat();
 
 		this.format = PixelFormat.getIntArgbPreInstance();
-		
+
 		refreshBuffer();
 	}
 
@@ -57,12 +57,14 @@ public class SebRenderer {
 		double[][] camView = camera.lookAt(to);
 
 		for (RenShape shape : scene.getShapes()) {
-			
+
 			double[][] transMat = RenShape.generateTransformationMat(shape);
-			
+
 			for (RenTriangle tri : shape.getPolys()) {
 
 				Point3D[] vert = tri.getVert();
+
+				// World-Space
 
 				for (int i = 0; i < vert.length; i++) {
 
@@ -83,6 +85,8 @@ public class SebRenderer {
 
 				if (dot < 0) {
 
+					// World-Space -> View-Space
+
 					for (int i = 0; i < vert.length; i++) {
 						vert[i] = RenUtilities.multMatVec(camView, vert[i]);
 					}
@@ -97,10 +101,14 @@ public class SebRenderer {
 
 						Point3D[] projVert = projTri.getVert();
 
+						// View-Space -> (Clip-Space) -> NDC-Space
+
 						for (int i = 0; i < projVert.length; i++) {
 
-							projVert[i] = RenUtilities.multMatVec(projMat, projVert[i]);
 							projVert[i] = RenUtilities.multVecVec(new Point3D(scaleX, scaleY, 1), projVert[i]);
+							projVert[i] = RenUtilities.multMatVec(projMat, projVert[i]);
+							
+							// Move Vec. to middle of screen
 							projVert[i] = projVert[i].add(new Point3D(width / 2, height / 2, 0));
 
 						}
@@ -323,7 +331,7 @@ public class SebRenderer {
 		double opacity = color.getOpacity() * shade;
 
 		return new Color(opacity, Math.abs(red), Math.abs(green), Math.abs(blue));
-		
+
 	}
 
 	private double[][] generateProjMat() {
@@ -349,7 +357,7 @@ public class SebRenderer {
 
 		this.framebuffer = new int[(int) (width * height)];
 		this.depthBuffer = new double[(int) (width * height)];
-		
+
 		refreshBuffer();
 
 		projMat[0][0] = 1 / (scale * aspectratio);
@@ -373,7 +381,7 @@ public class SebRenderer {
 
 	public void setFar(double far) {
 		this.far = far;
-		
+
 		projMat[2][2] = far / (far - near);
 		projMat[3][2] = -(far * near) / (far - near);
 	}
