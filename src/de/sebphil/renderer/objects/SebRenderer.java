@@ -18,6 +18,12 @@ public class SebRenderer {
 	private double[][] projMat;
 	private PixelFormat<IntBuffer> format;
 
+	/**
+	 * constructs new SebRenderer:
+	 * 	The SebRenderer contains a RenScene, depth-buffer, screen-buffer and values for the projection-matrix like fov, aspectratio.
+	 * @param width - width of image
+	 * @param height - height of image
+	 */
 	public SebRenderer(double width, double height) {
 
 		this.width = width;
@@ -35,17 +41,25 @@ public class SebRenderer {
 		this.depthBuffer = new double[(int) (width * height)];
 
 		this.projMat = new double[4][4];
-		this.projMat = generateProjMat();
+		generateProjMat();
 
 		this.format = PixelFormat.getIntArgbPreInstance();
 
 		refreshBuffer();
 	}
 
+	/**
+	 * draws frame-buffer to PixelWriter
+	 * @param writer - writer of canvas
+	 */
 	public void draw(PixelWriter writer) {
 		writer.setPixels(0, 0, (int) width, (int) height, format, framebuffer, 0, (int) width);
 	}
 
+	/**
+	 * Updates frame- and depth-buffer (renders scene)
+	 * @param scene - Scene to render
+	 */
 	public void update(RenScene scene) {
 
 		refreshBuffer();
@@ -58,7 +72,7 @@ public class SebRenderer {
 
 		for (RenShape shape : scene.getShapes()) {
 
-			double[][] transMat = RenShape.generateTransformationMat(shape);
+			double[][] worldMat = RenShape.generateWorldMat(shape);
 
 			for (RenTriangle tri : shape.getPolys()) {
 
@@ -68,8 +82,7 @@ public class SebRenderer {
 
 				for (int i = 0; i < vert.length; i++) {
 
-					vert[i] = RenUtilities.multVecVec(vert[i], shape.getSize());
-					vert[i] = RenUtilities.multMatVec(transMat, vert[i]);
+					vert[i] = RenUtilities.multMatVec(worldMat, vert[i]);
 					vert[i] = vert[i].add(shape.getPosition());
 
 				}
@@ -113,30 +126,40 @@ public class SebRenderer {
 
 						}
 
+						Color color2 = projTri.getColor();
+						
+						//Clipping
+						
 						BlockingQueue<RenTriangle> queue = new LinkedBlockingQueue<RenTriangle>();
 						queue.add(new RenTriangle(projVert[0], projVert[1], projVert[2]));
 						int trianglesToRaster = 1;
 
-						Color color2 = projTri.getColor();
-
+						// !!Screen-Space!!
+						
+						//all 4 plans
 						for (int i = 0; i < 4; i++) {
 
 							while (trianglesToRaster > 0) {
 								RenTriangle testTri = queue.poll();
-
+								
+								//max. 1 new triangle (2 total)
 								RenTriangle[] clipped = new RenTriangle[2];
 								trianglesToRaster--;
-
+								
 								if (i == 0) {
+									//clip to top (normal points in screen downwards) ((0, 0, 0), da oben y = 0)
 									clipped = clipToPlane(new Point3D(0, 0, 0), new Point3D(0, 1, 0), testTri.getVert(),
 											color2);
 								} else if (i == 1) {
+									//clip to bottom (normal points in screen upwards) ((0, height-1, 0), da unten y = height)
 									clipped = clipToPlane(new Point3D(0, height - 1, 0), new Point3D(0, -1, 0),
 											testTri.getVert(), color2);
 								} else if (i == 2) {
+									//clip to left
 									clipped = clipToPlane(new Point3D(0, 0, 0), new Point3D(1, 0, 0), testTri.getVert(),
 											color2);
 								} else if (i == 3) {
+									//clip to right
 									clipped = clipToPlane(new Point3D(width - 1, 0, 0), new Point3D(-1, 0, 0),
 											testTri.getVert(), color2);
 								}
@@ -194,6 +217,9 @@ public class SebRenderer {
 
 	}
 
+	/**
+	 * clears frame- and depth-buffer
+	 */
 	private void refreshBuffer() {
 		for (int i = 0; i < framebuffer.length; i++) {
 			framebuffer[i] = 0xFF000000;
@@ -201,8 +227,21 @@ public class SebRenderer {
 		}
 	}
 
+	/**
+	 * Clips triangle to plane
+	 * @param planeP - point on plane
+	 * @param planeN - plane-normal
+	 * @param vert - vertices to clip
+	 * @param color - color of triangle
+	 * @return returns clipped triangle
+	 */
 	private RenTriangle[] clipToPlane(Point3D planeP, Point3D planeN, Point3D[] vert, Color color) {
-
+		
+		/*
+		 * planeN - 1. pane normal
+		 * planeP - 2. Point on pane
+		 */
+		
 		planeN = planeN.normalize();
 
 		int insideCount = 0;
@@ -214,6 +253,7 @@ public class SebRenderer {
 		double dist2 = getDistance(vert[1], planeN, planeP);
 		double dist3 = getDistance(vert[2], planeN, planeP);
 
+		//sorting vertices according to if there are inside / outside of pane
 		if (dist1 >= 0) {
 			inside[insideCount++] = vert[0];
 		} else {
@@ -232,18 +272,19 @@ public class SebRenderer {
 			outside[outsideCount++] = vert[2];
 		}
 
+		//do nothing, cause not in view
 		if (insideCount == 0) {
 
 			return new RenTriangle[] {};
 
 		} else if (insideCount == 1 && outsideCount == 2) {
-
+			//1 inside / 2 outside
 			return new RenTriangle[] {
 					new RenTriangle(inside[0], lineIntersectPlane(planeP, planeN, inside[0], outside[0]),
 							lineIntersectPlane(planeP, planeN, inside[0], outside[1]), color) };
 
 		} else if (insideCount == 2 && outsideCount == 1) {
-
+			//2 inside / 1 outside
 			return new RenTriangle[] {
 					new RenTriangle(inside[0], inside[1], lineIntersectPlane(planeP, planeN, inside[0], outside[0]),
 							color),
@@ -251,13 +292,18 @@ public class SebRenderer {
 							lineIntersectPlane(planeP, planeN, inside[1], outside[0]), color) };
 
 		} else if (insideCount == 3 && outsideCount == 0) {
-
+			//all vertices in view
 			return new RenTriangle[] { new RenTriangle(vert[0], vert[1], vert[2], color) };
 		}
 
 		return null;
 	}
 
+	/**
+	 * rasterizes a triangle
+	 * @param vert - vertices of triangle
+	 * @param color - color of triangle
+	 */
 	private void rasterizeTri(Point3D[] vert, Color color) {
 
 		double a = edgeFunction(vert[0], vert[1], new Point2D(vert[2].getX(), vert[2].getY()));
@@ -300,8 +346,19 @@ public class SebRenderer {
 
 	}
 
+	/**
+	 * 
+	 * @param planeP - point on plane
+	 * @param planeN - plane-normal
+	 * @param lineStart - line-start (Point)
+	 * @param lineEnd - line-end (Point)
+	 * @return returns the intersection Point of the line with the plane
+	 */
 	private Point3D lineIntersectPlane(Point3D planeP, Point3D planeN, Point3D lineStart, Point3D lineEnd) {
-
+		
+		//planeP - point on plane
+		//planeN - plane normal
+		
 		Point3D planeNormal = planeN.normalize();
 		double planeD = -planeNormal.dotProduct(planeP);
 		double ad = lineStart.dotProduct(planeNormal);
@@ -314,15 +371,36 @@ public class SebRenderer {
 		return lineStart.add(intersection);
 	}
 
+	/**
+	 * 
+	 * @param point3d - point to check
+	 * @param planeN - plane-normal
+	 * @param planeP - point on plane
+	 * @return returns distance from point3d to the plane
+	 */
 	private double getDistance(Point3D point3d, Point3D planeN, Point3D planeP) {
 		return (planeN.getX() * point3d.getX() + planeN.getY() * point3d.getY() + planeN.getZ() * point3d.getZ()
 				- planeN.dotProduct(planeP));
 	}
 
+	/**
+	 * returns negative value, if point is on right side of line descriped by v1 and v2; 
+	 * returns positive value, if point is on left side
+	 * @param v1 - line-start
+	 * @param v2 - line-end
+	 * @param p - point to test
+	 * @return returns the value of the edgeFunction for given values
+	 */
 	private double edgeFunction(Point3D v1, Point3D v2, Point2D p) {
 		return (p.getX() - v1.getX()) * (v2.getY() - v1.getY()) - (p.getY() - v1.getY()) * (v2.getX() - v1.getX());
 	}
 
+	/**
+	 * shades a given Color with a specific value (Color * shade)
+	 * @param color - base color
+	 * @param shade - shade value
+	 * @return returns shaded Color
+	 */
 	private Color shade(Color color, double shade) {
 
 		double red = color.getRed() * shade;
@@ -334,21 +412,34 @@ public class SebRenderer {
 
 	}
 
-	private double[][] generateProjMat() {
+	/**
+	 * updates projection-matrix
+	 */
+	private void generateProjMat() {
 
-		double[][] projMat = new double[4][4];
+		scale = Math.tan(Math.toRadians(fov) / 2) * near;
 
-		scale = Math.tan(Math.toRadians(fov) / 2);
-
-		projMat[0][0] = 1 / (scale * aspectratio);
-		projMat[1][1] = -1 / (scale * aspectratio);
-		projMat[2][2] = far / (far - near);
-		projMat[3][2] = -(far * near) / (far - near);
-		projMat[2][3] = 1;
-
-		return projMat;
+		double right = scale;
+		double top = scale;
+		double left = -right;
+		double bottom = -top;
+		
+		projMat[0][0] = -2 * near / (right - left);
+		projMat[1][1] = 2 * near / (top - bottom);
+		projMat[2][0] = (right + left) / (right - left);
+		projMat[2][1] = (top + bottom) / (top - bottom);
+		
+		projMat[2][2] = -(far+near) / (far - near);
+		projMat[2][3] = -1;
+		
+		projMat[3][2] = 2 * far * near / (far - near);
 	}
 
+	/**
+	 * resizes image (frame- & depth-buffer)
+	 * @param width - new width
+	 * @param height - new height
+	 */
 	public void resize(double width, double height) {
 
 		this.width = width;
@@ -360,30 +451,26 @@ public class SebRenderer {
 
 		refreshBuffer();
 
-		projMat[0][0] = 1 / (scale * aspectratio);
-		projMat[1][1] = -1 / (scale * aspectratio);
+		generateProjMat();
 	}
 
 	public void setFov(double fov) {
 		this.fov = fov;
 		scale = Math.tan(Math.toRadians(fov) / 2);
 
-		projMat[0][0] = 1 / (scale * aspectratio);
-		projMat[1][1] = -1 / (scale * aspectratio);
+		generateProjMat();
 	}
 
 	public void setNear(double near) {
 		this.near = near;
 
-		projMat[2][2] = far / (far - near);
-		projMat[3][2] = -(far * near) / (far - near);
+		generateProjMat();
 	}
 
 	public void setFar(double far) {
 		this.far = far;
 
-		projMat[2][2] = far / (far - near);
-		projMat[3][2] = -(far * near) / (far - near);
+		generateProjMat();
 	}
 
 	public double getWidth() {

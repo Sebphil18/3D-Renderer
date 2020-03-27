@@ -13,6 +13,10 @@ public class NoiseGenerator2D {
 	private Point2D[] gard;
 	private Random ran;
 
+	/**
+	 * Constructs a new NoiseGenerator for 2D Noise
+	 * @param seed - seed of noise-function
+	 */
 	public NoiseGenerator2D(long seed) {
 
 		frequency = 0.2;
@@ -38,6 +42,12 @@ public class NoiseGenerator2D {
 
 	}
 	
+	/**
+	 * returns the final noise value of the noise function
+	 * @param x - x coordinate
+	 * @param y - y coordinate
+	 * @return returns noise-value at given coordinates
+	 */
 	public double realNoise(double x, double y) {
 
 		if (frequency < 0)
@@ -63,6 +73,11 @@ public class NoiseGenerator2D {
 		return sum;
 	}
 
+	/**
+	 * calculates a gray-scale value of the sum
+	 * @param sum - sum of noise values
+	 * @return returns gray-scale value of inserted noise-value (sum)
+	 */
 	public double getNoiseGray(double sum) {
 		
 		double grayscale = map(-1, 1, sum/octaves, 0, 1);
@@ -73,6 +88,11 @@ public class NoiseGenerator2D {
 		return grayscale;
 	}
 
+	/**
+	 * returns colored 
+	 * @param sum - sum of noise values
+	 * @return returns color of inserted noise-value (sum)
+	 */
 	public Color getNoiseRGB(double sum) {
 
 		Color color = Color.DARKBLUE;
@@ -94,6 +114,11 @@ public class NoiseGenerator2D {
 		return color;
 	}
 
+	/**
+	 * @param x - x coordinate
+	 * @param y - y coordinate
+	 * @return returns noise-value on given coordinates
+	 */
 	private double noise(double x, double y) {
 
 		int fx1 = (int) (Math.floor(x) % tableLength);

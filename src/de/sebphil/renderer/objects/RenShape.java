@@ -33,6 +33,10 @@ public class RenShape extends RenObject {
 		this.size = new Point3D(1, 1, 1);
 	}
 
+	/**
+	 * copies this opject
+	 * @return returns a copy of this object with new uuid and this.name + "Copy"
+	 */
 	public RenShape copy() {
 
 		RenShape copyShape = new RenShape(getName() + "Copy", getColor());
@@ -58,6 +62,10 @@ public class RenShape extends RenObject {
 		return copyShape;
 	}
 
+	/**
+	 * imports an OBJ file
+	 * @param file - .obj file
+	 */
 	public void importObj(File file) {
 
 		List<Point3D> vertecies = new ArrayList<Point3D>();
@@ -115,19 +123,26 @@ public class RenShape extends RenObject {
 
 		this.polys.addAll(impPolys);
 	}
-
+	
+	/**
+	 * generates new size-matrix
+	 * @param size - size of shape
+	 * @return returns size-matrix
+	 */
 	protected static double[][] generateSizeMat(Point3D size) {
 		double[][] sizeMat = new double[4][4];
 		sizeMat[0][0] = size.getX();
 		sizeMat[1][1] = size.getY();
 		sizeMat[2][2] = size.getZ();
 		sizeMat[3][3] = 1.0;
-		sizeMat[3][0] = 1.0;
-		sizeMat[3][1] = 1.0;
-		sizeMat[3][2] = 1.0;
 		return sizeMat;
 	}
 
+	/**
+	 * generates new translation-matrix
+	 * @param translation - translation of object
+	 * @return returns new translation-matrix
+	 */
 	protected static double[][] generateTransMat(Point3D translation) {
 		double[][] transMat = new double[4][4];
 		transMat[0][0] = 1.0;
@@ -140,13 +155,19 @@ public class RenShape extends RenObject {
 		return transMat;
 	}
 
-	protected static double[][] generateTransformationMat(RenShape shape) {
-		double[][] transf = RenUtilities.multMatMat(RenObject.generateRotXMat(Math.toRadians(shape.getAngleZ())),
-				RenObject.generateRotYMat(Math.toRadians(shape.getAngleY())));
-		transf = RenUtilities.multMatMat(transf, RenObject.generateRotZMat(Math.toRadians(shape.getAngleX())));
-		transf = RenUtilities.multMatMat(RenShape.generateTransMat(shape.getTranslation()), transf);
+	/**
+	 * generates new world-matrix
+	 * @param shape - RenShape to generate the world-matrix from
+	 * @return returns new world-matrix of shape
+	 */
+	protected static double[][] generateWorldMat(RenShape shape) {
 		
-		return transf;
+		double[][] worldMat = RenUtilities.multMatMat(generateSizeMat(shape.getSize()), shape.getRotXMat());
+		worldMat = RenUtilities.multMatMat(worldMat, shape.getRotYMat());
+		worldMat = RenUtilities.multMatMat(worldMat, shape.getRotZMat());
+		worldMat = RenUtilities.multMatMat(RenShape.generateTransMat(shape.getTranslation()), worldMat);
+		
+		return worldMat;
 	}
 
 	public void setSize(Point3D size) {

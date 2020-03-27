@@ -9,6 +9,10 @@ public class RenCamera extends RenObject {
 	private Point3D lookDir;
 	private Point3D newRight, newUp;
 
+	/**
+	 * Constructs new RenCamera
+	 * @param name - name of RenCamera
+	 */
 	public RenCamera(String name) {
 		super(name);
 
@@ -20,6 +24,11 @@ public class RenCamera extends RenObject {
 		camRotMat = RenUtilities.multMatMat(camRotMat, getRotXMat());
 	}
 
+	/**
+	 * generates new view-matrix
+	 * @param to - point where camera looks to
+	 * @return returns new view-matrix
+	 */
 	public double[][] lookAt(Point3D to) {
 
 		double[][] camWorldMat = new double[4][4];

@@ -10,6 +10,13 @@ import javafx.util.Duration;
 
 public class RenUtilities {
 
+	/**
+	 * checks if string is numeric (can be represented as a number-type)
+	 * @param arg - string to test
+	 * @param point - if set to true points are allowed; if set to false points are not allowed
+	 * @param e - if set to true e is allowed for representing numbers as x * 10^n
+	 * @return returns if arg can be represented as number
+	 */
 	public static boolean isNumeric(String arg, boolean point, boolean e) {
 
 		if (arg.isEmpty())
@@ -42,10 +49,22 @@ public class RenUtilities {
 		return true;
 	}
 
+	/**
+	 * multiplies a vector with a vector
+	 * @param vec1 - vector1
+	 * @param vec2 - vectpr2
+	 * @return returns new vector
+	 */
 	public static Point3D multVecVec(Point3D vec1, Point3D vec2) {
 		return new Point3D(vec1.getX() * vec2.getX(), vec1.getY() * vec2.getY(), vec1.getZ() * vec2.getZ());
 	}
 
+	/**
+	 * multiplies a matrix with a vector with result /= w
+	 * @param matrix
+	 * @param vector
+	 * @return returns new vector (Point3D)
+	 */
 	public static Point3D multMatVec(double[][] matrix, Point3D vector) {
 
 		double[] result = new double[3];
@@ -60,8 +79,6 @@ public class RenUtilities {
 		double w = vector.getX() * matrix[0][3] + vector.getY() * matrix[1][3] + vector.getZ() * matrix[2][3]
 				+ matrix[3][3];
 
-		// Clip-Space -> NDC-Space
-
 		if (w != 0.0f) {
 			result[0] /= w;
 			result[1] /= w;
@@ -71,6 +88,12 @@ public class RenUtilities {
 		return new Point3D(result[0], result[1], result[2]);
 	}
 
+	/**
+	 * multiplies 2 matrices
+	 * @param m1 - matrix1
+	 * @param m2 - matrix2
+	 * @return returns matrix m3 = m1 * m2
+	 */
 	public static double[][] multMatMat(double[][] m1, double[][] m2) {
 
 		double[][] result = new double[m1.length][m2[0].length];
@@ -90,25 +113,30 @@ public class RenUtilities {
 		return result;
 	}
 
+	/**
+	 * inverts lookAt-matrix
+	 * @param mat - lookAt-matrix
+	 * @return returns new, inverted lookAt-matrix
+	 */
 	public static double[][] invertLookAtMat(double[][] mat) {
 
 		double[][] result = new double[4][4];
 		result[0][0] = mat[0][0];
 		result[0][1] = mat[1][0];
 		result[0][2] = mat[2][0];
-		result[0][3] = 0.0;
+		result[0][3] = 0;
 		result[1][0] = mat[0][1];
 		result[1][1] = mat[1][1];
 		result[1][2] = mat[2][1];
-		result[1][3] = 0.0;
+		result[1][3] = 0;
 		result[2][0] = mat[0][2];
 		result[2][1] = mat[1][2];
 		result[2][2] = mat[2][2];
-		result[2][3] = 0.0;
+		result[2][3] = 0;
 		result[3][0] = -(mat[3][0] * result[0][0] + mat[3][1] * result[1][0] + mat[3][2] * result[2][0]);
 		result[3][1] = -(mat[3][0] * result[0][1] + mat[3][1] * result[1][1] + mat[3][2] * result[2][1]);
 		result[3][2] = -(mat[3][0] * result[0][2] + mat[3][1] * result[1][2] + mat[3][2] * result[2][2]);
-		result[3][3] = 1.0;
+		result[3][3] = 1;
 		return result;
 	}
 

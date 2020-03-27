@@ -16,6 +16,10 @@ public class RenNoise extends RenShape {
 	private ResGrid grid;
 	private Random ran;
 
+	/**
+	 * Constructs new RenNoise
+	 * @param name - name of Object
+	 */
 	public RenNoise(String name) {
 
 		super(name);
@@ -33,6 +37,10 @@ public class RenNoise extends RenShape {
 
 	}
 
+	/**
+	 * generates PolyMesh of 2D Noise
+	 * @param colored - if set to true the polyMesh will be colored by height; if set to false don't
+	 */
 	public void generatePolyMesh(boolean colored) {
 
 		super.getPolys().clear();

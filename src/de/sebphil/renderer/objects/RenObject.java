@@ -12,12 +12,25 @@ public class RenObject {
 	private Point3D position;
 	private UUID uuid;
 
+	/**
+	 * Constructs new RenObject:
+	 * 	The RenObject is base for every element placed in a RenScene besides lights. It contains a name, uuid, position and rotation of an object.
+	 * @param name - name of RenObject
+	 */
 	public RenObject(String name) {
 		this.name = name;
 		this.uuid = UUID.randomUUID();
 		this.position = new Point3D(0, 0, 0);
+		this.rotXMat = generateRotXMat(angleX);
+		this.rotYMat = generateRotXMat(angleY);
+		this.rotZMat = generateRotXMat(angleZ);
 	}
 
+	/**
+	 * generates a new rotation-matrix around the x-Axis
+	 * @param angleX - angle of rotation
+	 * @return returns new rotation-x-matrix
+	 */
 	protected static double[][] generateRotXMat(double angleX) {
 
 		double[][] rotMat = new double[4][4];
@@ -30,7 +43,12 @@ public class RenObject {
 		return rotMat;
 	}
 
-	protected static double[][] generateRotZMat(double angleZ) {
+	/**
+	 * generates a new rotation-matrix around the z-Axis
+	 * @param angleZ - angle of rotation
+	 * @return returns new rotation-z-matrix
+	 */
+	private static double[][] generateRotZMat(double angleZ) {
 
 		double[][] rotMat = new double[4][4];
 		rotMat[0][0] = Math.cos(angleZ);
@@ -41,8 +59,13 @@ public class RenObject {
 		rotMat[3][3] = 1;
 		return rotMat;
 	}
-
-	protected static double[][] generateRotYMat(double angleY) {
+	
+	/**
+	 * generates a new rotation-matrix around the y-Axis
+	 * @param angleY - angle of rotation
+	 * @return returns new rotation-y-matrix
+	 */
+	private static double[][] generateRotYMat(double angleY) {
 
 		double[][] rotMat = new double[4][4];
 		rotMat[0][0] = Math.cos(angleY);
@@ -54,16 +77,28 @@ public class RenObject {
 		return rotMat;
 	}
 
+	/**
+	 * sets angle of rotation around the x-Axis and updates rotation-x-matrix
+	 * @param angleX - angle of rotation
+	 */
 	public void setAngleX(double angleX) {
 		this.angleX = angleX % 360;
 		this.rotXMat = generateRotXMat(Math.toRadians(angleX % 360));
 	}
 
+	/**
+	 * sets angle of rotation around the y-Axis and updates rotation-y-matrix
+	 * @param angleY - angle of rotation
+	 */
 	public void setAngleY(double angleY) {
 		this.angleY = angleY % 360;
 		this.rotYMat = generateRotYMat(Math.toRadians(angleY % 360));
 	}
 
+	/**
+	 * sets angle of rotation around the z-Axis and updates rotation-z-matrix
+	 * @param angleZ - angle of rotation
+	 */
 	public void setAngleZ(double angleZ) {
 		this.angleZ = angleZ % 360;
 		this.rotZMat = generateRotZMat(Math.toRadians(angleZ % 360));

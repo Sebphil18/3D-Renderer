@@ -11,6 +11,11 @@ public class RenScene {
 	private ObservableList<RenShape> shapes;
 	private ObservableList<Point3D> lights;
 
+	/**
+	 * Constructs new RenScene:
+	 * 	A RenScene contains all objects placed in the 3D World including shapes, lights and the camera.
+	 * 	It also has an value of the ambient lighting (ambient).
+	 */
 	public RenScene() {
 		this.ambient = 0.05;
 		this.camera = new RenCamera("camera");
