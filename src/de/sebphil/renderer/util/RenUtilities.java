@@ -78,7 +78,7 @@ public class RenUtilities {
 
 		double w = vector.getX() * matrix[0][3] + vector.getY() * matrix[1][3] + vector.getZ() * matrix[2][3]
 				+ matrix[3][3];
-
+		
 		if (w != 0.0f) {
 			result[0] /= w;
 			result[1] /= w;
@@ -180,6 +180,16 @@ public class RenUtilities {
 
 		}
 
+	}
+	
+	public static void printMat(double[][] mat) {
+		for(int i=0;i<mat.length;i++) {
+			for(int j=0;j<mat[0].length;j++) {
+				System.out.print(mat[i][j]+" ");
+			}
+			System.out.println();
+		}
+		System.out.println();
 	}
 
 }

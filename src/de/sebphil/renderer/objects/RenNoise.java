@@ -9,7 +9,7 @@ import javafx.scene.paint.Color;
 
 public class RenNoise extends RenShape {
 
-	private double offsetY, maxHeight, minHeight;
+	private double offsetY, maxHeight, minHeight, scale;
 	private long seed;
 	private boolean dynamic;
 	private NoiseGenerator2D noise;
@@ -29,6 +29,7 @@ public class RenNoise extends RenShape {
 		this.dynamic = false;
 		this.maxHeight = 100;
 		this.minHeight = -100;
+		this.scale = 1;
 
 		noise.setAmplitude(1);
 		noise.setFreqMult(1);
@@ -47,23 +48,23 @@ public class RenNoise extends RenShape {
 		
 		for (int x = 0; x < grid.getAmountX() - 1; x++) {
 			for (int y = 0; y < grid.getAmountY() - 1; y++) {
-
+				
 				Point3D v1 = new Point3D(
-						(x - grid.getAmountX() / 2), 
-						grid.getVal(x, y) * 5, 
-						y);
+						(x - grid.getAmountX() / 2) * scale, 
+						grid.getVal(x, y) * 5 * scale, 
+						y * scale);
 				
-				Point3D v2 = new Point3D(((x + 1) - grid.getAmountX() / 2), 
-						grid.getVal(x + 1, y) * 5, 
-						y);
+				Point3D v2 = new Point3D(((x + 1) - grid.getAmountX() / 2) * scale, 
+						grid.getVal(x + 1, y) * 5 * scale, 
+						y * scale);
 				
-				Point3D v3 = new Point3D(((x + 1) - grid.getAmountX() / 2), 
-						grid.getVal(x + 1, y + 1) * 5, 
-						(y + 1));
+				Point3D v3 = new Point3D(((x + 1) - grid.getAmountX() / 2) * scale, 
+						grid.getVal(x + 1, y + 1) * 5 * scale, 
+						(y + 1) * scale);
 				
-				Point3D v4 = new Point3D((x - grid.getAmountX() / 2), 
-						grid.getVal(x, y + 1) * 5, 
-						(y + 1));
+				Point3D v4 = new Point3D((x - grid.getAmountX() / 2) * scale, 
+						grid.getVal(x, y + 1) * 5 * scale, 
+						(y + 1) * scale);
 				
 				
 				Color color = super.getColor();
@@ -144,6 +145,14 @@ public class RenNoise extends RenShape {
 
 	public void setMinHeight(double minHeight) {
 		this.minHeight = minHeight;
+	}
+
+	public double getScale() {
+		return scale;
+	}
+
+	public void setScale(double scale) {
+		this.scale = scale;
 	}
 
 }

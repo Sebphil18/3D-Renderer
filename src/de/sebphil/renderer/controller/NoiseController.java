@@ -114,6 +114,18 @@ public class NoiseController implements Initializable {
     @FXML
     private Slider pencilRadiusSlider;
 	
+    @FXML
+    private Slider scaleSlider;
+
+    @FXML
+    private TextField scaleMinField;
+
+    @FXML
+    private TextField scaleMaxField;
+
+    @FXML
+    private TextField scaleValField;
+    
 	private double brushRadius, brushStrength;
 	private long seed;
 	private RenNoise noiseShape;
@@ -203,7 +215,12 @@ public class NoiseController implements Initializable {
 		minHeightMinField.setText(Double.toString(minHeightSlider.getMin()));
 		minHeightMaxField.setText(Double.toString(minHeightSlider.getMax()));
 		minHeightValField.setText(Double.toString(minHeightSlider.getValue()));
-
+		
+		scaleMinField.setText(Double.toString(scaleSlider.getMin()));
+		scaleMaxField.setText(Double.toString(scaleSlider.getMax()));
+		scaleValField.setText(Double.toString(scaleSlider.getValue()));
+		
+		//Grid listener
 		grid.getShowGrid().addListener(e -> {
 			showGridField.setSelected(grid.getShowGrid().getValue());
 			fillGridRaw(noise, grid, gc, noiseShape);
@@ -214,7 +231,8 @@ public class NoiseController implements Initializable {
 		showGridField.selectedProperty().addListener(e -> {
 			grid.getShowGrid().setValue(showGridField.isSelected());
 		});
-
+		
+		//Canvas listener
 		canvasPane.heightProperty().addListener(e -> {
 			canvas.setHeight(canvasPane.getHeight());
 			grid.getSizeY().setValue(canvas.getHeight());
@@ -232,13 +250,15 @@ public class NoiseController implements Initializable {
 			fillGrid(noise, grid, gc, noiseShape);
 			generatePolyMesh(grid);
 		});
-
+		
+		//resolution-slider listener
 		resSlider.valueProperty().addListener(e -> {
 			grid.getWidth().setValue(resSlider.getValue());
 			fillGrid(noise, grid, gc, noiseShape);
 			generatePolyMesh(grid);
 		});
-
+		
+		//scale-sliders listener 
 		scaleXSlider.valueProperty().addListener(e -> {
 			grid.getSizeX().setValue(scaleXSlider.getValue());
 			fillGrid(noise, grid, gc, noiseShape);
@@ -250,7 +270,8 @@ public class NoiseController implements Initializable {
 			fillGrid(noise, grid, gc, noiseShape);
 			generatePolyMesh(grid);
 		});
-
+		
+		//freq.-slider listener
 		freqSlider.valueProperty().addListener(e -> {
 			noise.setFrequency(freqSlider.getValue());
 			fillGrid(noise, grid, gc, noiseShape);
@@ -265,7 +286,8 @@ public class NoiseController implements Initializable {
 		freqSlider.minProperty().addListener(e -> {
 			freqMinField.setText(Double.toString(freqSlider.getMin()));
 		});
-
+		
+		//ampl.-slider listener
 		amplSlider.valueProperty().addListener(e -> {
 			noise.setAmplitude(amplSlider.getValue());
 			fillGrid(noise, grid, gc, noiseShape);
@@ -280,7 +302,23 @@ public class NoiseController implements Initializable {
 		amplSlider.minProperty().addListener(e -> {
 			amplMinField.setText(Double.toString(amplSlider.getMin()));
 		});
-
+		
+		//scale-slider listener
+		scaleSlider.valueProperty().addListener(e -> {
+			noiseShape.setScale(scaleSlider.getValue());
+			scaleValField.setText(Double.toString(noiseShape.getScale()));
+			generatePolyMesh(grid);
+		});
+		
+		scaleSlider.maxProperty().addListener(e -> {
+			scaleMaxField.setText(Double.toString(scaleSlider.getMax()));
+		});
+		
+		scaleSlider.minProperty().addListener(e -> {
+			scaleMinField.setText(Double.toString(scaleSlider.getMin()));
+		});
+		
+		//maxHeight-slider listener [max/min]
 		maxHeightSlider.valueProperty().addListener(e -> {
 			noiseShape.setMaxHeight(maxHeightSlider.getValue());
 			fillGrid(noise, grid, gc, noiseShape);
@@ -295,7 +333,8 @@ public class NoiseController implements Initializable {
 		maxHeightSlider.minProperty().addListener(e -> {
 			maxHeightMinField.setText(Double.toString(maxHeightSlider.getMin()));
 		});
-
+		
+		//minHeight-slider listener [max/min]
 		minHeightSlider.valueProperty().addListener(e -> {
 			noiseShape.setMinHeight(minHeightSlider.getValue());
 			fillGrid(noise, grid, gc, noiseShape);
@@ -310,14 +349,14 @@ public class NoiseController implements Initializable {
 		minHeightSlider.minProperty().addListener(e -> {
 			minHeightMinField.setText(Double.toString(minHeightSlider.getMin()));
 		});
-
+		
+		//freq.-fields listener [max/min]
 		freqMaxField.textProperty().addListener(e -> {
 			if (RenUtilities.isNumeric(freqMaxField.getText(), true, true))
 				freqSlider.setMax(Double.valueOf(freqMaxField.getText()));
 			else
 				freqMaxField.setText(Double.toString(freqSlider.getMax()));
 		});
-
 		freqMinField.textProperty().addListener(e -> {
 			if (RenUtilities.isNumeric(freqMinField.getText(), true, true)) {
 				double min = Double.valueOf(freqMinField.getText());
@@ -327,7 +366,8 @@ public class NoiseController implements Initializable {
 			} else
 				freqMinField.setText(Double.toString(freqSlider.getMin()));
 		});
-
+		
+		//ampl.-fields listener [max/min]
 		amplMaxField.textProperty().addListener(e -> {
 			if (RenUtilities.isNumeric(amplMaxField.getText(), true, true))
 				amplSlider.setMax(Double.valueOf(amplMaxField.getText()));
@@ -345,6 +385,7 @@ public class NoiseController implements Initializable {
 				amplMinField.setText(Double.toString(amplSlider.getMin()));
 		});
 
+		//maxHeight-fields listener [max/min]
 		maxHeightMaxField.textProperty().addListener(e -> {
 			if (RenUtilities.isNumeric(maxHeightMaxField.getText(), true, true))
 				maxHeightSlider.setMax(Double.valueOf(maxHeightMaxField.getText()));
@@ -360,7 +401,8 @@ public class NoiseController implements Initializable {
 			} else
 				maxHeightMinField.setText(Double.toString(maxHeightSlider.getMin()));
 		});
-
+		
+		//minHeight-fields listener [max/min]
 		minHeightMaxField.textProperty().addListener(e -> {
 			if (RenUtilities.isNumeric(minHeightMaxField.getText(), true, true))
 				minHeightSlider.setMax(Double.valueOf(minHeightMaxField.getText()));
@@ -376,7 +418,26 @@ public class NoiseController implements Initializable {
 			} else
 				minHeightMinField.setText(Double.toString(minHeightSlider.getMin()));
 		});
-
+		
+		//scale-fields listener [max/min]
+		
+		scaleMaxField.textProperty().addListener(e -> {
+			if (RenUtilities.isNumeric(scaleMaxField.getText(), true, true))
+				scaleSlider.setMax(Double.valueOf(scaleMaxField.getText()));
+			else
+				scaleMaxField.setText(Double.toString(scaleSlider.getMax()));
+		});
+		
+		scaleMinField.textProperty().addListener(e -> {
+			if (RenUtilities.isNumeric(scaleMinField.getText(), true, true)) {
+				double min = Double.valueOf(scaleMinField.getText());
+				if (min < scaleSlider.getMin())
+					scaleSlider.setMin(min);
+			} else
+				scaleMinField.setText(Double.toString(scaleSlider.getMin()));
+		});
+		
+		//settings-fields listener
 		layersField.textProperty().addListener(e -> {
 			if (RenUtilities.isNumeric(layersField.getText(), false, false)) {
 				noise.setOctaves(Integer.valueOf(layersField.getText()));
@@ -392,7 +453,7 @@ public class NoiseController implements Initializable {
 				generatePolyMesh(grid);
 			}
 		});
-
+		
 		amplMultiField.textProperty().addListener(e -> {
 			if (RenUtilities.isNumeric(amplMultiField.getText(), true, true)) {
 				noise.setAmplMult(Double.valueOf(amplMultiField.getText()));
@@ -417,17 +478,17 @@ public class NoiseController implements Initializable {
 				generatePolyMesh(grid);
 			}
 		});
-
+		
+		//value-fields listener
+		
 		freqValField.textProperty().addListener(e -> {
-			if (RenUtilities.isNumeric(freqValField.getText(), true, true)) {
+			if (RenUtilities.isNumeric(freqValField.getText(), true, true)) 
 				freqSlider.setValue(Double.valueOf(freqValField.getText()));
-			}
 		});
 
 		amplValField.textProperty().addListener(e -> {
-			if (RenUtilities.isNumeric(amplValField.getText(), true, true)) {
+			if (RenUtilities.isNumeric(amplValField.getText(), true, true))
 				amplSlider.setValue(Double.valueOf(amplValField.getText()));
-			}
 		});
 
 		maxHeightValField.textProperty().addListener(e -> {
@@ -446,7 +507,12 @@ public class NoiseController implements Initializable {
 				colorCheck.setSelected(true);
 			}
 		});
-
+		
+		scaleValField.textProperty().addListener(e -> {
+			if(RenUtilities.isNumeric(scaleValField.getText(), true, true))
+				scaleSlider.setValue(Double.valueOf(scaleValField.getText()));
+		});
+		
 		// Pencil controls
 
 		brushRadius = 25;
@@ -565,11 +631,17 @@ public class NoiseController implements Initializable {
 	private void generatePolyMesh(ResGrid grid) {
 
 		noiseShape.generatePolyMesh(colorCheck.isSelected());
-
 		MainController.renderMain();
 
 	}
 
+	/**
+	 * fills grid without generating new noise
+	 * @param noise
+	 * @param grid
+	 * @param gc
+	 * @param noiseShape
+	 */
 	private void fillGrid(NoiseGenerator2D noise, ResGrid grid, GraphicsContext gc, RenNoise noiseShape) {
 
 		gc.clearRect(0, 0, canvasPane.getWidth(), canvasPane.getHeight());
@@ -602,6 +674,13 @@ public class NoiseController implements Initializable {
 
 	}
 
+	/**
+	 * fills grid without generating new noise
+	 * @param noise
+	 * @param grid
+	 * @param gc
+	 * @param noiseShape
+	 */
 	private void fillGridRaw(NoiseGenerator2D noise, ResGrid grid, GraphicsContext gc, RenNoise noiseShape) {
 
 		gc.clearRect(0, 0, canvasPane.getWidth(), canvasPane.getHeight());

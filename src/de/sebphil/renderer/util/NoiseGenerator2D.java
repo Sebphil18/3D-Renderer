@@ -97,20 +97,22 @@ public class NoiseGenerator2D {
 
 		Color color = Color.DARKBLUE;
 
-		double value = map(-1 * amplitude * octaves, 1 * amplitude * octaves, sum, -0.2, 1);
-
+		double value = map(-1 * amplitude * octaves, amplitude * octaves, sum, -0.2, 1);
+		
 		if (value <= 0.1) {
 			color = Color.web("#0a0075").interpolate(Color.web("#00b4eb"), value / 0.1);
 		} else if (value <= 0.2) {
 			color = Color.web("#00b4eb").interpolate(Color.web("#26bf00"), value / 0.2);
-		} else if (value <= 0.4) {
+		} else if (value <= 0.6) {
 			color = Color.web("#26bf00").interpolate(Color.web("#b2ed02"), value / 0.4);
-		} else if (value <= 0.7) {
+		} else if (value <= 1) {
 			color = Color.web("#b2ed02").interpolate(Color.web("#e1eb8d"), value / 0.7);
-		} else {
+		} else if (value <= 1.4){
 			color = Color.web("#F2F6CE").interpolate(Color.web("#cf7800"), value / 1.1);
+		}else {
+			color = Color.web("cf7800").interpolate(Color.web("#ffffff"), value / 0.2);
 		}
-
+		
 		return color;
 	}
 

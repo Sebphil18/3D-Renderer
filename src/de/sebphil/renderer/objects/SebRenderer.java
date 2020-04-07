@@ -1,8 +1,8 @@
 package de.sebphil.renderer.objects;
 
 import java.nio.IntBuffer;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.ArrayList;
+import java.util.List;
 import de.sebphil.renderer.util.RenUtilities;
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
@@ -13,7 +13,7 @@ import javafx.scene.paint.Color;
 public class SebRenderer {
 
 	private int[] framebuffer;
-	private double near, far, fov, scale, width, height, aspectratio, scaleX, scaleY;
+	private double near, far, fov, scale, width, height, aspectratio;
 	private double[] depthBuffer;
 	private double[][] projMat;
 	private PixelFormat<IntBuffer> format;
@@ -30,12 +30,9 @@ public class SebRenderer {
 		this.height = height;
 		this.aspectratio = width / height;
 
-		this.near = 0.1;
-		this.far = 500;
+		this.near = 0.4;
+		this.far = 1.7;
 		this.fov = 60;
-
-		this.scaleX = 360;
-		this.scaleY = 360;
 
 		this.framebuffer = new int[(int) (width * height)];
 		this.depthBuffer = new double[(int) (width * height)];
@@ -61,13 +58,16 @@ public class SebRenderer {
 	 * @param scene - Scene to render
 	 */
 	public void update(RenScene scene) {
-
+		
 		refreshBuffer();
-
+		
 		RenCamera camera = scene.getCamera();
 
 		Point3D to = new Point3D(0, 0, 1);
-
+		
+		double w = width / 2;
+		double h = height / 2;
+		
 		double[][] camView = camera.lookAt(to);
 
 		for (RenShape shape : scene.getShapes()) {
@@ -100,13 +100,12 @@ public class SebRenderer {
 
 					// World-Space -> View-Space
 
-					for (int i = 0; i < vert.length; i++) {
+					for (int i = 0; i < vert.length; i++) 
 						vert[i] = RenUtilities.multMatVec(camView, vert[i]);
-					}
-
+					
 					RenTriangle[] triangles = clipToPlane(new Point3D(0, 0, near), new Point3D(0, 0, 1), vert,
 							tri.getColor());
-
+					
 					if (triangles.length == 0)
 						continue;
 
@@ -118,64 +117,65 @@ public class SebRenderer {
 
 						for (int i = 0; i < projVert.length; i++) {
 
-							projVert[i] = RenUtilities.multVecVec(new Point3D(scaleX, scaleY, 1), projVert[i]);
 							projVert[i] = RenUtilities.multMatVec(projMat, projVert[i]);
 							
-							// Move Vec. to middle of screen
-							projVert[i] = projVert[i].add(new Point3D(width / 2, height / 2, 0));
+							// NDC -> Screen-Space
+							projVert[i] = new Point3D(projVert[i].getX() * w + w, projVert[i].getY() * h + h, projVert[i].getZ());
 
 						}
 
 						Color color2 = projTri.getColor();
 						
-						//Clipping
+						//Clipping (top, bottom, right, left, far)
 						
-						BlockingQueue<RenTriangle> queue = new LinkedBlockingQueue<RenTriangle>();
-						queue.add(new RenTriangle(projVert[0], projVert[1], projVert[2]));
-						int trianglesToRaster = 1;
-
-						// !!Screen-Space!!
+						List<RenTriangle> clipTriangles = new ArrayList<RenTriangle>();
+						clipTriangles.add(new RenTriangle(projVert[0], projVert[1], projVert[2]));
+						int trianglesToClip = 1;
 						
-						//all 4 plans
-						for (int i = 0; i < 4; i++) {
+						for (int i = 0; i < 5; i++) {
 
-							while (trianglesToRaster > 0) {
-								RenTriangle testTri = queue.poll();
+							trianglesToClip = clipTriangles.size();
+							
+							while (trianglesToClip > 0) {
+								RenTriangle testTri = clipTriangles.get(0);
+								clipTriangles.remove(0);
 								
 								//max. 1 new triangle (2 total)
-								RenTriangle[] clipped = new RenTriangle[2];
-								trianglesToRaster--;
+								RenTriangle[] clipped = new RenTriangle[0];
+								trianglesToClip--;
 								
 								if (i == 0) {
-									//clip to top (normal points in screen downwards) ((0, 0, 0), da oben y = 0)
 									clipped = clipToPlane(new Point3D(0, 0, 0), new Point3D(0, 1, 0), testTri.getVert(),
 											color2);
+									
 								} else if (i == 1) {
-									//clip to bottom (normal points in screen upwards) ((0, height-1, 0), da unten y = height)
 									clipped = clipToPlane(new Point3D(0, height - 1, 0), new Point3D(0, -1, 0),
 											testTri.getVert(), color2);
 								} else if (i == 2) {
-									//clip to left
 									clipped = clipToPlane(new Point3D(0, 0, 0), new Point3D(1, 0, 0), testTri.getVert(),
 											color2);
 								} else if (i == 3) {
-									//clip to right
 									clipped = clipToPlane(new Point3D(width - 1, 0, 0), new Point3D(-1, 0, 0),
+											testTri.getVert(), color2);
+								}else if(i == 4) {
+									clipped = clipToPlane(new Point3D(0, 0, far), new Point3D(0, 0, -1),
+											testTri.getVert(), color2);
+								}else if(i == 5) {
+									clipped = clipToPlane(new Point3D(0, 0, near), new Point3D(0, 0, 1),
 											testTri.getVert(), color2);
 								}
 
-								for (int n = 0; n < clipped.length; n++) {
-									queue.offer(clipped[n]);
-								}
+								for (int n = 0; n < clipped.length; n++) 
+									clipTriangles.add(clipped[n]);
 
 							}
-							trianglesToRaster = queue.size();
 						}
 
-						while (queue.size() > 0) {
+						while (clipTriangles.size() > 0) {
 
-							RenTriangle triClip = queue.poll();
-
+							RenTriangle triClip = clipTriangles.get(0);
+							clipTriangles.remove(0);
+							
 							double r = 0, g = 0, b = 0, o = 0;
 
 							for (Point3D dirLight : scene.getLights()) {
@@ -226,79 +226,63 @@ public class SebRenderer {
 			depthBuffer[i] = Double.MIN_VALUE;
 		}
 	}
-
+	
 	/**
-	 * Clips triangle to plane
+	 * clips triangle to plane
 	 * @param planeP - point on plane
 	 * @param planeN - plane-normal
-	 * @param vert - vertices to clip
+	 * @param vert - vertices of triangle
 	 * @param color - color of triangle
-	 * @return returns clipped triangle
+	 * @return returns clipped triangles
 	 */
 	private RenTriangle[] clipToPlane(Point3D planeP, Point3D planeN, Point3D[] vert, Color color) {
 		
+		List<Point3D> output = new ArrayList<Point3D>();
+		
+		for(int i=0;i<vert.length;i++) {
+			
+			Point3D currentPoint = vert[i];
+			Point3D prevPoint = vert[(i + vert.length - 1) % vert.length];
+			Point3D interstection = lineIntersectPlane(planeP, planeN, currentPoint, prevPoint);
+			
+			double dist1 = getDistance(currentPoint, planeN, planeP);
+			double dist2 = getDistance(prevPoint, planeN, planeP);
+			
+			if(dist1 >= 0) {
+				
+				if(dist2 < 0) {
+					output.add(interstection);
+				}
+				
+				output.add(currentPoint);
+				
+			}else if(dist2 >= 0) {
+				output.add(interstection);
+			}
+			
+		}
+		
 		/*
-		 * planeN - 1. pane normal
-		 * planeP - 2. Point on pane
+		 * constructing new triangles
 		 */
 		
-		planeN = planeN.normalize();
-
-		int insideCount = 0;
-		int outsideCount = 0;
-		Point3D[] inside = new Point3D[3];
-		Point3D[] outside = new Point3D[3];
-
-		double dist1 = getDistance(vert[0], planeN, planeP);
-		double dist2 = getDistance(vert[1], planeN, planeP);
-		double dist3 = getDistance(vert[2], planeN, planeP);
-
-		//sorting vertices according to if there are inside / outside of pane
-		if (dist1 >= 0) {
-			inside[insideCount++] = vert[0];
-		} else {
-			outside[outsideCount++] = vert[0];
-		}
-
-		if (dist2 >= 0) {
-			inside[insideCount++] = vert[1];
-		} else {
-			outside[outsideCount++] = vert[1];
-		}
-
-		if (dist3 >= 0) {
-			inside[insideCount++] = vert[2];
-		} else {
-			outside[outsideCount++] = vert[2];
-		}
-
-		//do nothing, cause not in view
-		if (insideCount == 0) {
-
+		if(output.isEmpty())
 			return new RenTriangle[] {};
-
-		} else if (insideCount == 1 && outsideCount == 2) {
-			//1 inside / 2 outside
+		else if(output.size() == 3) {
 			return new RenTriangle[] {
-					new RenTriangle(inside[0], lineIntersectPlane(planeP, planeN, inside[0], outside[0]),
-							lineIntersectPlane(planeP, planeN, inside[0], outside[1]), color) };
-
-		} else if (insideCount == 2 && outsideCount == 1) {
-			//2 inside / 1 outside
+					new RenTriangle(output.get(0), output.get(1), output.get(2), color),
+					};
+		}else if(output.size() == 4) {
 			return new RenTriangle[] {
-					new RenTriangle(inside[0], inside[1], lineIntersectPlane(planeP, planeN, inside[0], outside[0]),
-							color),
-					new RenTriangle(inside[1], lineIntersectPlane(planeP, planeN, inside[0], outside[0]),
-							lineIntersectPlane(planeP, planeN, inside[1], outside[0]), color) };
-
-		} else if (insideCount == 3 && outsideCount == 0) {
-			//all vertices in view
-			return new RenTriangle[] { new RenTriangle(vert[0], vert[1], vert[2], color) };
+					new RenTriangle(output.get(2), output.get(0), output.get(1), color),
+					new RenTriangle(output.get(3), output.get(1), output.get(2), color),
+					new RenTriangle(output.get(3), output.get(0), output.get(2), color),
+					};
 		}
-
+		
 		return null;
 	}
-
+	
 	/**
 	 * rasterizes a triangle
 	 * @param vert - vertices of triangle
@@ -356,11 +340,10 @@ public class SebRenderer {
 	 */
 	private Point3D lineIntersectPlane(Point3D planeP, Point3D planeN, Point3D lineStart, Point3D lineEnd) {
 		
-		//planeP - point on plane
-		//planeN - plane normal
-		
 		Point3D planeNormal = planeN.normalize();
+		
 		double planeD = -planeNormal.dotProduct(planeP);
+		
 		double ad = lineStart.dotProduct(planeNormal);
 		double bd = lineEnd.dotProduct(planeNormal);
 		double t = (-planeD - ad) / (bd - ad);
@@ -419,7 +402,7 @@ public class SebRenderer {
 
 		scale = Math.tan(Math.toRadians(fov) / 2) * near;
 
-		double right = scale;
+		double right = scale * aspectratio;
 		double top = scale;
 		double left = -right;
 		double bottom = -top;
