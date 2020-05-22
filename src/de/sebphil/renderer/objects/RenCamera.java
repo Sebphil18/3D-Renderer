@@ -53,19 +53,19 @@ public class RenCamera extends RenObject {
 		camWorldMat[0][0] = newRight.getX();
 		camWorldMat[0][1] = newRight.getY();
 		camWorldMat[0][2] = newRight.getZ();
-		camWorldMat[0][3] = 0.0;
+		
 		camWorldMat[1][0] = newUp.getX();
 		camWorldMat[1][1] = newUp.getY();
 		camWorldMat[1][2] = newUp.getZ();
-		camWorldMat[1][3] = 0.0;
+		
 		camWorldMat[2][0] = newForward.getX();
 		camWorldMat[2][1] = newForward.getY();
 		camWorldMat[2][2] = newForward.getZ();
-		camWorldMat[2][3] = 0.0;
+		
 		camWorldMat[3][0] = pos.getX();
 		camWorldMat[3][1] = pos.getY();
 		camWorldMat[3][2] = pos.getZ();
-		camWorldMat[3][3] = 1.0;
+		camWorldMat[3][3] = 1;
 
 		return RenUtilities.invertLookAtMat(camWorldMat);
 	}

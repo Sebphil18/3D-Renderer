@@ -11,8 +11,8 @@ public class RenNoise extends RenShape {
 
 	private double offsetY, maxHeight, minHeight, scale;
 	private long seed;
-	private boolean dynamic;
-	private NoiseGenerator2D noise;
+	private boolean dynamic, mask;
+	private NoiseGenerator2D noise, maskNoise;
 	private ResGrid grid;
 	private Random ran;
 
@@ -26,16 +26,18 @@ public class RenNoise extends RenShape {
 
 		this.ran = new Random();
 		this.noise = new NoiseGenerator2D(ran.nextLong());
+		this.maskNoise = new NoiseGenerator2D(ran.nextLong());
 		this.dynamic = false;
+		this.mask = false;
 		this.maxHeight = 100;
 		this.minHeight = -100;
 		this.scale = 1;
-
-		noise.setAmplitude(1);
-		noise.setFreqMult(1);
-		noise.setAmplMult(1);
-		noise.setOctaves(1);
-
+		
+		maskNoise.setAmplitude(0.5);
+		maskNoise.setFreqMult(0.5);
+		maskNoise.setAmplMult(1.8);
+		maskNoise.setOctaves(5);
+		
 	}
 
 	/**
@@ -49,21 +51,26 @@ public class RenNoise extends RenShape {
 		for (int x = 0; x < grid.getAmountX() - 1; x++) {
 			for (int y = 0; y < grid.getAmountY() - 1; y++) {
 				
+				double val1 = grid.getVal(x, y) * 5 * scale;
+				double val2 = grid.getVal(x + 1, y) * 5 * scale;
+				double val3 = grid.getVal(x + 1, y + 1) * 5 * scale;
+				double val4 = grid.getVal(x, y + 1) * 5 * scale;
+				
 				Point3D v1 = new Point3D(
 						(x - grid.getAmountX() / 2) * scale, 
-						grid.getVal(x, y) * 5 * scale, 
+						val1, 
 						y * scale);
 				
 				Point3D v2 = new Point3D(((x + 1) - grid.getAmountX() / 2) * scale, 
-						grid.getVal(x + 1, y) * 5 * scale, 
+						val2, 
 						y * scale);
 				
 				Point3D v3 = new Point3D(((x + 1) - grid.getAmountX() / 2) * scale, 
-						grid.getVal(x + 1, y + 1) * 5 * scale, 
+						val3, 
 						(y + 1) * scale);
 				
 				Point3D v4 = new Point3D((x - grid.getAmountX() / 2) * scale, 
-						grid.getVal(x, y + 1) * 5 * scale, 
+						val4, 
 						(y + 1) * scale);
 				
 				
@@ -153,6 +160,22 @@ public class RenNoise extends RenShape {
 
 	public void setScale(double scale) {
 		this.scale = scale;
+	}
+
+	public NoiseGenerator2D getMaskNoise() {
+		return maskNoise;
+	}
+
+	public void setMaskNoise(NoiseGenerator2D maskNoise) {
+		this.maskNoise = maskNoise;
+	}
+
+	public boolean isMask() {
+		return mask;
+	}
+
+	public void setMask(boolean mask) {
+		this.mask = mask;
 	}
 
 }

@@ -162,10 +162,10 @@ public class RenShape extends RenObject {
 	 */
 	protected static double[][] generateWorldMat(RenShape shape) {
 		
-		double[][] worldMat = RenUtilities.multMatMat(generateSizeMat(shape.getSize()), shape.getRotXMat());
+		double[][] worldMat = RenUtilities.multMatMat(RenShape.generateTransMat(shape.getTranslation()), shape.getRotXMat());
 		worldMat = RenUtilities.multMatMat(worldMat, shape.getRotYMat());
 		worldMat = RenUtilities.multMatMat(worldMat, shape.getRotZMat());
-		worldMat = RenUtilities.multMatMat(RenShape.generateTransMat(shape.getTranslation()), worldMat);
+		worldMat = RenUtilities.multMatMat(RenShape.generateSizeMat(shape.getSize()), worldMat);
 		
 		return worldMat;
 	}

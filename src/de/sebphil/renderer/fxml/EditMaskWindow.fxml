@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="148.0" prefWidth="236.0" stylesheets="@../css/MainStyle.css" xmlns="http://javafx.com/javafx/1.8.0.191" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.sebphil.renderer.controller.EditMaskController">
+   <children>
+      <Label id="text2" layoutX="9.0" layoutY="15.0" text="frequency:" />
+      <TextField fx:id="freqField" layoutX="78.0" layoutY="10.0" prefHeight="26.0" prefWidth="141.0" promptText="value" />
+      <Label id="text2" layoutX="9.0" layoutY="40.0" text="amplitude:" />
+      <TextField fx:id="amplField" layoutX="78.0" layoutY="35.0" prefHeight="26.0" prefWidth="141.0" promptText="value" />
+      <TextField fx:id="octavesField" layoutX="79.0" layoutY="61.0" prefHeight="26.0" prefWidth="141.0" promptText="value" />
+      <Label id="text2" layoutX="8.0" layoutY="66.0" text="octaves:" />
+      <Label id="text2" layoutX="10.0" layoutY="96.0" text="feq.-mult.:" />
+      <TextField fx:id="freqMultField" layoutX="79.0" layoutY="91.0" prefHeight="26.0" prefWidth="141.0" promptText="value" />
+      <Label id="text2" layoutX="10.0" layoutY="122.0" text="amp.-mult.:" />
+      <TextField fx:id="amplMultField" layoutX="81.0" layoutY="117.0" prefHeight="26.0" prefWidth="141.0" promptText="value" />
+   </children>
+</AnchorPane>
