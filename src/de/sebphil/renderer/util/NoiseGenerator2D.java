@@ -10,12 +10,17 @@ public class NoiseGenerator2D {
 	private double frequency, amplitude, freqMult, amplMult;
 	private int tableLength, octaves;
 	private int[] permTable;
-	private Point2D[] gard;
+	private Point2D[] grad;
 	private Random ran;
 
 	/**
-	 * Constructs a new NoiseGenerator for 2D Noise
-	 * @param seed - seed of noise-function
+	 * Constructor für einen NoiseGenerator2D.
+	 * 
+	 * Diese Klasse stellt einen Noise-Generator dar, welcher geeignete Werte mithilfe
+	 * von einer zweidimensionalen PerlinNoise Funktion erzeugt.
+	 * Alle nötigen Parameter werden mit gültigen werden belegt.
+	 * 
+	 * @param seed Seed der Noise-Funktion
 	 */
 	public NoiseGenerator2D(long seed) {
 
@@ -26,13 +31,13 @@ public class NoiseGenerator2D {
 		octaves = 1;
 		tableLength = 256;
 		permTable = new int[tableLength * 2];
-		gard = new Point2D[tableLength];
+		grad = new Point2D[tableLength];
 
 		ran = new Random(seed);
 
 		for (int i = 0; i < tableLength; i++) {
 			permTable[i] = i;
-			gard[i] = new Point2D(ran.nextDouble() * 2 - 1, ran.nextDouble() * 2 - 1);
+			grad[i] = new Point2D(ran.nextDouble() * 2 - 1, ran.nextDouble() * 2 - 1);
 		}
 
 		for (int i = 0; i < tableLength; ++i) {
@@ -43,10 +48,12 @@ public class NoiseGenerator2D {
 	}
 	
 	/**
-	 * returns the final noise value of the noise function
-	 * @param x - x coordinate
-	 * @param y - y coordinate
-	 * @return returns noise-value at given coordinates
+	 * Errechnet den summierten Wert der Noise-Funktion an der 
+	 * ensprechenden Stelle.
+	 * 
+	 * @param x x-Koordinate
+	 * @param y y-Koordiante
+	 * @return Gibt den Wer Noise-Funktion an der angegebenen Stelle zurück
 	 */
 	public double realNoise(double x, double y) {
 
@@ -74,9 +81,10 @@ public class NoiseGenerator2D {
 	}
 
 	/**
-	 * calculates a gray-scale value of the sum
-	 * @param sum - sum of noise values
-	 * @return returns gray-scale value of inserted noise-value (sum)
+	 * Errechnet ein Grayscale-Wert für die gegebene Summe.
+	 * 
+	 * @param sum Summe von dieser Noise-Funktion
+	 * @return returns Grayscale-Wert für eine Summe dieser Noise-Funktion
 	 */
 	public double getNoiseGray(double sum) {
 		
@@ -89,9 +97,10 @@ public class NoiseGenerator2D {
 	}
 
 	/**
-	 * returns colored 
-	 * @param sum - sum of noise values
-	 * @return returns color of inserted noise-value (sum)
+	 * Errechnet Farbe (RGB) für die gegebene Summe.
+	 * 
+	 * @param sum Summe von dieser Noise-Funktion
+	 * @return returns Farbe des gegebenen Noise-Wertes (sum)
 	 */
 	public Color getNoiseRGB(double sum) {
 
@@ -119,9 +128,11 @@ public class NoiseGenerator2D {
 	}
 	
 	/**
-	 * @param x - x coordinate
-	 * @param y - y coordinate
-	 * @return returns noise-value on given coordinates
+	 * Berechnet den Wer der Noise-Funktion an der gegebenen Stelle.
+	 * 
+	 * @param x x-Koordinate
+	 * @param y y-Koordinate
+	 * @return returns Noise-Wert an den entsprechenden Koordinaten
 	 */
 	private double noise(double x, double y) {
 
@@ -133,13 +144,14 @@ public class NoiseGenerator2D {
 		double tx = x - Math.floor(x);
 		double ty = y - Math.floor(y);
 
+		// Smoothfunction
 		double sx = Math.pow(tx, 2) * (3 - 2 * tx);
 		double sy = Math.pow(ty, 2) * (3 - 2 * ty);
 
-		Point2D g1 = gard[getInd(fy1, fx1)];
-		Point2D g2 = gard[getInd(fy1, fx2)];
-		Point2D g3 = gard[getInd(fy2, fx1)];
-		Point2D g4 = gard[getInd(fy2, fx2)];
+		Point2D g1 = grad[getInd(fy1, fx1)];
+		Point2D g2 = grad[getInd(fy1, fx2)];
+		Point2D g3 = grad[getInd(fy2, fx1)];
+		Point2D g4 = grad[getInd(fy2, fx2)];
 
 		double x1 = tx;
 		double y1 = ty;
@@ -156,15 +168,32 @@ public class NoiseGenerator2D {
 
 		return lerp(lerpX1, lerpX2, sy);
 	}
-
+	
+	/**
+	 * Diese Funktion gibt einen Index zu einem Element für die Gradienten
+	 * zurück.
+	 * 
+	 * @param x	x-Koordiante
+	 * @param y	y-Koordiante
+	 * @return Index für ein Element des Arrays, welches die Gradienten enthält
+	 */
 	private int getInd(int x, int y) {
 		return permTable[permTable[y] + x];
 	}
 
+	/**
+	 * Diese Funktion führt eine lineare Interpolation zwischen den Zahlen
+	 * a und b aus.
+	 * 
+	 * @param a Wert A
+	 * @param b Wert B
+	 * @param c "Grad" der Interpolation (sollte zwischen 0.0 oder 1.0 liegen)
+	 * @return interpolierter Wert
+	 */
 	private double lerp(double a, double b, double c) {
 		return a + c * (b - a);
 	}
-
+	
 	private static double map(double a, double b, double x, double c, double d) {
 		return (x - a) / (b - a) * (d - c) + c;
 	}
@@ -216,16 +245,13 @@ public class NoiseGenerator2D {
 	public void setOctaves(int layers) {
 		this.octaves = layers;
 	}
-
+	
 	public void setSeed(long seed) {
 		ran.setSeed(seed);
-		/*for (int i = 0; i < tableLength; i++) {
-			gard[i] = new Point2D(ran.nextDouble() * 2 - 1, ran.nextDouble() * 2 - 1);
-		}*/
 		
 		for (int i = 0; i < tableLength; i++) {
 			permTable[i] = i;
-			gard[i] = new Point2D(ran.nextDouble() * 2 - 1, ran.nextDouble() * 2 - 1);
+			grad[i] = new Point2D(ran.nextDouble() * 2 - 1, ran.nextDouble() * 2 - 1);
 		}
 
 		for (int i = 0; i < tableLength; ++i) {

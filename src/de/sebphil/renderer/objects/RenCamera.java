@@ -10,8 +10,12 @@ public class RenCamera extends RenObject {
 	private Point3D newRight, newUp;
 
 	/**
-	 * Constructs new RenCamera
-	 * @param name - name of RenCamera
+	 * Constructor für eine RenCamera.
+	 * 
+	 * Diese Klasse stellt eine Kamera dar, welche sich im Raum frei bewegen kann.
+	 * Dieses Kameramodell kann lediglich den "Nick-Winkel" und "Gier-Winkel" verändern.
+	 * 
+	 * @param name	Name des zu erzeugenden Objektes
 	 */
 	public RenCamera(String name) {
 		super(name);
@@ -25,9 +29,10 @@ public class RenCamera extends RenObject {
 	}
 
 	/**
-	 * generates new view-matrix
-	 * @param to - point where camera looks to
-	 * @return returns new view-matrix
+	 * Generiert eine neue View-Matrix.
+	 * 
+	 * @param to Zielpunkt
+	 * @return View-Matrix
 	 */
 	public double[][] lookAt(Point3D to) {
 
@@ -69,7 +74,7 @@ public class RenCamera extends RenObject {
 
 		return RenUtilities.invertLookAtMat(camWorldMat);
 	}
-
+	
 	public double getYaw() {
 		return getAngleY();
 	}
@@ -77,14 +82,26 @@ public class RenCamera extends RenObject {
 	public double getPitch() {
 		return getAngleX();
 	}
-
+	
+	/**
+	 * Legt den Gier-Winkel fest.
+	 * Generiert zudem die Drehmatrizen dieser Kamera neu.
+	 * 
+	 * @param yaw	Drehwinkel in Gradmaß
+	 */
 	public void setYaw(double yaw) {
 		setAngleY(yaw);
 
 		camRotMat = RenUtilities.multMatMat(getRotXMat(), getRotYMat());
 		camRotMat = RenUtilities.multMatMat(camRotMat, getRotZMat());
 	}
-
+	
+	/**
+	 * Legt den Nick-Winkel fest.
+	 * Generiert zudem die Drehmatrizen dieser Kamera neu.
+	 * 
+	 * @param pitch	Drehwinkel in Gradmaß
+	 */
 	public void setPitch(double pitch) {
 		
 		if(pitch % 360 >= 89) return;

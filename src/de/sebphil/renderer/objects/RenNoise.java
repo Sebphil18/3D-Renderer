@@ -11,14 +11,18 @@ public class RenNoise extends RenShape {
 
 	private double offsetY, maxHeight, minHeight, scale;
 	private long seed;
-	private boolean dynamic, mask;
+	private boolean mask;
 	private NoiseGenerator2D noise, maskNoise;
 	private ResGrid grid;
 	private Random ran;
 
 	/**
-	 * Constructs new RenNoise
-	 * @param name - name of Object
+	 * Constructor für RenNoise.
+	 * 
+	 * Diese Klasse erbt von der Klasse RenShape.
+	 * @see de.sebphil.renderer.objects.RenShape
+	 * 
+	 * @param name	Name des zu erzeugenden Objektes
 	 */
 	public RenNoise(String name) {
 
@@ -27,7 +31,6 @@ public class RenNoise extends RenShape {
 		this.ran = new Random();
 		this.noise = new NoiseGenerator2D(ran.nextLong());
 		this.maskNoise = new NoiseGenerator2D(ran.nextLong());
-		this.dynamic = false;
 		this.mask = false;
 		this.maxHeight = 100;
 		this.minHeight = -100;
@@ -41,13 +44,24 @@ public class RenNoise extends RenShape {
 	}
 
 	/**
-	 * generates PolyMesh of 2D Noise
-	 * @param colored - if set to true the polyMesh will be colored by height; if set to false don't
+	 * Generiert ein Gitter aus Dreiecken basierend auf dem ResGrid von diesem Objekt.
+	 * Mit der Variable 'scale' kann die Größe der einzelnen Zellen bestimmt werden.
+	 * 
+	 * @param colored
+	 * <ul>
+	 * <li>wenn true:	Dreiecke werden basierend auf ihrer y-Koordiante gefärbt.
+	 * <li>wenn false:	Dreiecke werden nicht basierend auf iherer y-Koordinate eingefärbt.
+	 * </ul>
 	 */
 	public void generatePolyMesh(boolean colored) {
-
+		
+		/*
+		 * Es müssen alle Dreiecke dieses Objektes gelöscht werden, da evtl. noch
+		 * einige noch geladen sind.
+		 */
 		super.getPolys().clear();
 		
+		//Erstellt das Gitter aus Dreiecken
 		for (int x = 0; x < grid.getAmountX() - 1; x++) {
 			for (int y = 0; y < grid.getAmountY() - 1; y++) {
 				
@@ -128,14 +142,6 @@ public class RenNoise extends RenShape {
 		if (offsetY < 0)
 			return;
 		this.offsetY = offsetY;
-	}
-
-	public boolean isDynamic() {
-		return dynamic;
-	}
-
-	public void setDynamic(boolean dynamic) {
-		this.dynamic = dynamic;
 	}
 
 	public double getMaxHeight() {

@@ -13,9 +13,10 @@ public class RenObject {
 	private UUID uuid;
 
 	/**
-	 * Constructs new RenObject:
-	 * 	The RenObject is base for every element placed in a RenScene besides lights. It contains a name, uuid, position and rotation of an object.
-	 * @param name - name of RenObject
+	 * Constructor für ein RenObject.
+	 * Dabei werden alle Membervariablen mit einem validen Wert belegt.
+	 * 
+	 * @param name	Name des zu erzeugenden Objektes
 	 */
 	public RenObject(String name) {
 		this.name = name;
@@ -27,9 +28,10 @@ public class RenObject {
 	}
 
 	/**
-	 * generates a new rotation-matrix around the x-Axis
-	 * @param angleX - angle of rotation
-	 * @return returns new rotation-x-matrix
+	 * Diese Funktion generiert eine geeignete Rotationsmatrix um die x-Achse.
+	 * 
+	 * @param angleX	Grad der Rotation in Radiant.
+	 * @return			Gibt eine neue Rotationsmatrix zurück.
 	 */
 	protected static double[][] generateRotXMat(double angleX) {
 
@@ -44,9 +46,10 @@ public class RenObject {
 	}
 
 	/**
-	 * generates a new rotation-matrix around the z-Axis
-	 * @param angleZ - angle of rotation
-	 * @return returns new rotation-z-matrix
+	 * Diese Funktion generiert eine geeignete Rotationsmatrix um die z-Achse.
+	 * 
+	 * @param angleZ	Grad der Rotation in Radiant.
+	 * @return			Gibt eine neue Rotationsmatrix zurück.
 	 */
 	private static double[][] generateRotZMat(double angleZ) {
 
@@ -61,9 +64,10 @@ public class RenObject {
 	}
 	
 	/**
-	 * generates a new rotation-matrix around the y-Axis
-	 * @param angleY - angle of rotation
-	 * @return returns new rotation-y-matrix
+	 * Diese Funktion generiert eine geeignete Rotationsmatrix um die y-Achse.
+	 * 
+	 * @param angleY	Grad der Rotation in Radiant.
+	 * @return			Gibt eine neue Rotationsmatrix zurück.
 	 */
 	private static double[][] generateRotYMat(double angleY) {
 
@@ -78,8 +82,11 @@ public class RenObject {
 	}
 
 	/**
-	 * sets angle of rotation around the x-Axis and updates rotation-x-matrix
-	 * @param angleX - angle of rotation
+	 * Legt einen neuen Winkel für die Rotation um die x-Achse fest.
+	 * Diese Funktion erzeugt eine neue Rotationsmatrix für die Rotation um 
+	 * die x-Achse für diese Instanz.
+	 * 
+	 * @param angleX	Grad der Rotation in Gradmaß
 	 */
 	public void setAngleX(double angleX) {
 		this.angleX = angleX % 360;
@@ -87,8 +94,11 @@ public class RenObject {
 	}
 
 	/**
-	 * sets angle of rotation around the y-Axis and updates rotation-y-matrix
-	 * @param angleY - angle of rotation
+	 * Legt einen neuen Winkel für die Rotation um die y-Achse fest.
+	 * Diese Funktion erzeugt eine neue Rotationsmatrix für die Rotation um 
+	 * die y-Achse für diese Instanz.
+	 * 
+	 * @param angleY	Grad der Rotation in Gradmaß
 	 */
 	public void setAngleY(double angleY) {
 		this.angleY = angleY % 360;
@@ -96,8 +106,11 @@ public class RenObject {
 	}
 
 	/**
-	 * sets angle of rotation around the z-Axis and updates rotation-z-matrix
-	 * @param angleZ - angle of rotation
+	 * Legt einen neuen Winkel für die Rotation um die z-Achse fest.
+	 * Diese Funktion erzeugt eine neue Rotationsmatrix für die Rotation um 
+	 * die z-Achse für diese Instanz.
+	 * 
+	 * @param angleZ	Grad der Rotation in Gradmaß
 	 */
 	public void setAngleZ(double angleZ) {
 		this.angleZ = angleZ % 360;

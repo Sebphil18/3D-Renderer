@@ -7,11 +7,26 @@ import javafx.scene.paint.Color;
 
 public class ResGrid {
 
+	//width 	Breite eiener einzelnen Zelle
+	//sizeX/Y 	Größe des Gitters in Pixel
 	private SimpleDoubleProperty sizeX, sizeY, width;
 	private SimpleBooleanProperty showGrid;
+	
+	// Anzahl der Spalten und Zeilen
 	private int amountX, amountY;
 	private double[] grid;
 
+	/**
+	 * Constructor für ein ResGrid.
+	 * 
+	 * Diese Klasse repräsentiert eine Gitterstruktur, in welcher jeder Zelle ein Wert
+	 * zugeteilt werden kann und gezeichnet werden kann. Dieser Constructor sollte
+	 * verwendet werden, wenn das Gitter gezeichnet werden soll.
+	 * 
+	 * @param sizeX Anzahl der Spalten
+	 * @param sizeY Anzahl der Reihen
+	 * @param gc GraphicContext, um das Gitter zu zeichnen
+	 */
 	public ResGrid(double sizeX, double sizeY, GraphicsContext gc) {
 
 		this.sizeX = new SimpleDoubleProperty(sizeX);
@@ -25,6 +40,16 @@ public class ResGrid {
 
 	}
 
+	/**
+	 * Constructor für ein ResGrid.
+	 * 
+	 * Diese Klasse repräsentiert eine Gitterstruktur, in welcher jeder Zelle ein Wert
+	 * zugeteilt werden kann und gezeichnet werden kann. Dieser Constructor sollte verwendet
+	 * werden, wenn das Gitter nicht gezeichnet werden soll.
+	 * 
+	 * @param sizeX Anzahl der Spalten
+	 * @param sizeY Anzahl der Reihen
+	 */
 	public ResGrid(double sizeX, double sizeY) {
 
 		this.sizeX = new SimpleDoubleProperty(sizeX);
@@ -35,6 +60,10 @@ public class ResGrid {
 
 	}
 
+	/**
+	 * Aktiviert Listener für das GraphicsContext
+	 * @param gc GraphicsContext
+	 */
 	public void setUpListener(GraphicsContext gc) {
 
 		this.sizeX.addListener(e -> {
@@ -58,6 +87,11 @@ public class ResGrid {
 
 	}
 
+	/**
+	 * Zeichnet die einzelnen Linien des Gitters auf eine Zeichenfläche.
+	 * 
+	 * @param gc GraphicsContext
+	 */
 	private void drawGrid(GraphicsContext gc) {
 
 		gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
@@ -78,6 +112,10 @@ public class ResGrid {
 
 	}
 
+	/**
+	 * Generiert das Gitter.
+	 * @return Array, welches das Gitter repräsentiert
+	 */
 	private double[] generateGrid() {
 
 		amountX = (int) (this.sizeX.getValue() / width.getValue());
@@ -89,6 +127,12 @@ public class ResGrid {
 
 	}
 
+	/**
+	 * Zeichnet einzelne Zelle
+	 * @param x x-Koordiante der Zelle
+	 * @param y y-Koordiante der Zelle
+	 * @param gc GraphicsContext, auf welchem die Zelle gezeichnet werden soll
+	 */
 	public void fillCell(int x, int y, GraphicsContext gc) {
 		
 		if (showGrid.getValue()) {
@@ -98,11 +142,23 @@ public class ResGrid {
 		}
 		
 	}
-
+	
+	/**
+	 * 
+	 * @param x x-Koordinate
+	 * @param y y-Koordinate
+	 * @return gibt Wert der Zelle bei (x|y) zurück
+	 */
 	public double getVal(int x, int y) {
 		return grid[y * amountX + x];
 	}
 
+	/**
+	 * setzt Wert für Zelle bei (x|y)
+	 * @param x x-Koordiante
+	 * @param y y-Koordiante
+	 * @param val Wert, welcher in die Zelle eingetragen werden soll
+	 */
 	public void setVal(int x, int y, double val) {
 		grid[y * amountX + x] = val;
 	}

@@ -27,6 +27,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 
+/**
+ * Diese Klasse wird für die Steuerung der Benutzeroberfläche verwendet.
+ * Sie steuert das Fenster, welches das Editieren eines Noise-Objektes ermöglicht
+ * Sie wird durch de/sebphil/renderer/fxml/NoiseWindow.fxml aufgerufen (bzw. ausgeführt).
+ */
 public class NoiseController implements Initializable {
 
 	@FXML
@@ -87,9 +92,6 @@ public class NoiseController implements Initializable {
 	private CheckBox colorCheck;
 
 	@FXML
-	private CheckBox dynamicCheck;
-
-	@FXML
 	private Slider maxHeightSlider;
 
 	@FXML
@@ -145,6 +147,10 @@ public class NoiseController implements Initializable {
 	private Circle prevCircle;
 	private GraphicsContext gc;
 
+	/**
+	 * Initialisiert diesen Kontroller.
+	 * Dabei werden die Listener für die Steuerelemente (Textfelder, Knöpfe, etc.) initilisiert.
+	 */
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 
@@ -155,7 +161,12 @@ public class NoiseController implements Initializable {
 		grid = new ResGrid(canvas.getWidth(), canvas.getHeight());
 
 		if (noiseShape == null) {
-
+			/*
+			 * Wenn kein Noise-Objekt ausgewählt wurde, wird automatisch ein neues erzeugt,
+			 * welches anschließend verwendet werden kann und mit Standardwerten belegt ist.
+			 * Es wird zu der aktuell vom MainController ausgewählten Szene hinzugefügt.
+			 */
+			
 			noiseShape = new RenNoise("noise");
 			noiseShape.setGrid(grid);
 			noiseShape.setSeed(seed);
@@ -168,6 +179,11 @@ public class NoiseController implements Initializable {
 
 		} else {
 
+			/*
+			 * Wurde ein Noise-Objekt ausgewählt, werden dessen Eigenschaften geladen
+			 * und die Steuerelemente des Fensters an diese Werte entsprechend angepasst.
+			 */
+			
 			noiseShape.setOffsetY(0);
 
 			grid = noiseShape.getGrid();
@@ -203,13 +219,12 @@ public class NoiseController implements Initializable {
 			freqMultiField.setText(Double.toString(noise.getFreqMult()));
 			amplMultiField.setText(Double.toString(noise.getAmplMult()));
 			seedField.setText(Long.toString(noiseShape.getSeed()));
-
-			dynamicCheck.setSelected(noiseShape.isDynamic());
 			
 			maskCheck.setSelected(noiseShape.isMask());
 			
 		}
-
+		
+		// Weitere Anpassung von Steuerelemente an das aktuelle Noise-Objekt
 		seedField.setText(Long.toString(seed));
 
 		scaleXSlider.setValue(scaleXSlider.getMax());
@@ -461,7 +476,8 @@ public class NoiseController implements Initializable {
 				generatePolyMesh();
 			}
 		});
-
+		
+		// freqMultField listener
 		freqMultiField.textProperty().addListener(e -> {
 			if (RenUtilities.isNumeric(freqMultiField.getText(), true, true)) {
 				noise.setFreqMult(Double.valueOf(freqMultiField.getText()));
@@ -469,7 +485,8 @@ public class NoiseController implements Initializable {
 				generatePolyMesh();
 			}
 		});
-
+		
+		// amplMultField listener
 		amplMultiField.textProperty().addListener(e -> {
 			if (RenUtilities.isNumeric(amplMultiField.getText(), true, true)) {
 				noise.setAmplMult(Double.valueOf(amplMultiField.getText()));
@@ -477,27 +494,24 @@ public class NoiseController implements Initializable {
 				generatePolyMesh();
 			}
 		});
-
+		
+		// seedField listener
 		seedField.textProperty().addListener(e -> {
-			if (RenUtilities.isNumeric(seedField.getText(), false, true)) {
+			if (RenUtilities.isNumeric(seedField.getText(), false, false)) {
 				noise.setSeed(Long.valueOf(seedField.getText()));
 				maskNoise.setSeed(Long.valueOf(seedField.getText()));
 				fillGrid();
 				generatePolyMesh();
 			}
 		});
-
+		
+		// colorCheck listener
 		colorCheck.selectedProperty().addListener(e -> {
-			if (!colorCheck.isSelected() && dynamicCheck.isSelected()) {
-				colorCheck.setSelected(true);
-			} else {
-				fillGrid();
-				generatePolyMesh();
-			}
+			fillGrid();
+			generatePolyMesh();
 		});
 
 		// value-fields listener
-
 		freqValField.textProperty().addListener(e -> {
 			if (RenUtilities.isNumeric(freqValField.getText(), true, true))
 				freqSlider.setValue(Double.valueOf(freqValField.getText()));
@@ -518,28 +532,28 @@ public class NoiseController implements Initializable {
 				minHeightSlider.setValue(Double.valueOf(minHeightValField.getText()));
 		});
 
-		dynamicCheck.selectedProperty().addListener(e -> {
-			noiseShape.setDynamic(dynamicCheck.isSelected());
-			if (!colorCheck.isSelected() && dynamicCheck.isSelected()) {
-				colorCheck.setSelected(true);
-			}
-		});
-
 		scaleValField.textProperty().addListener(e -> {
 			if (RenUtilities.isNumeric(scaleValField.getText(), true, true))
 				scaleSlider.setValue(Double.valueOf(scaleValField.getText()));
 		});
 		
+		// maskCheck listener
 		maskCheck.selectedProperty().addListener(e -> {
 			
+			// Wenn dieses Prüffeld ausgewählt wurde, soll eine Maske verwendet werden
 			noiseShape.setMask(maskCheck.isSelected());
 			fillGrid();
 			generatePolyMesh();
 			
 		});
 		
+		// editMaskButton listener
 		editMaskButton.setOnAction(e -> {
 			
+			/*
+			 * Dieser Listener lädt und öffnet das Fenster, welches verwendet wird, um die Eigenschaften
+			 * der Maske zu editieren.
+			 */
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/de/sebphil/renderer/fxml/EditMaskWindow.fxml"));
 			
 			try {
@@ -562,27 +576,29 @@ public class NoiseController implements Initializable {
 			
 		});
 		
-		// Pencil controls
-
+		// Steuerung für den "Pinsel", mit den die HeightMap per Hand editiert werden kann
 		brushRadius = 25;
 		brushStrength = 0.5;
-
+		
 		prevCircle = new Circle(brushRadius);
 		prevCircle.setVisible(false);
 		prevCircle.setFill(Color.TRANSPARENT);
 		prevCircle.setStroke(Color.MAGENTA);
-
+		
 		canvasPane.getChildren().add(prevCircle);
 
 		rootPane.setOnMouseMoved(e -> {
-
+			
+			// Prüfung, ob Mauszeiger sich auf der Zeichenfläche befindet
 			boolean inBounds = canvasPane.getBoundsInParent().contains(new Point2D(e.getX(), e.getY()));
 
 			if (inBounds && (e.getTarget() instanceof Canvas || e.getTarget() instanceof Circle)) {
-
+				
+				// Lässt einen Kreis erscheinen, in welchem Bereich die Werte der Heightmap geändert werden
 				if (!prevCircle.isVisible())
 					prevCircle.setVisible(true);
 
+				// Steuerung des Vorschau-Kreises
 				double x = e.getX() - canvasPane.getLayoutX();
 				double y = e.getY() - canvasPane.getLayoutY();
 
@@ -598,9 +614,10 @@ public class NoiseController implements Initializable {
 				prevCircle.setVisible(false);
 
 		});
-
+		
 		canvasPane.setOnMouseClicked(e -> {
-
+			
+			// Steuerung für die Manipulation der Werte in der Heightmap
 			double x = e.getX();
 			double y = e.getY();
 
@@ -610,13 +627,21 @@ public class NoiseController implements Initializable {
 
 			int ix = (int) (x / width);
 			int iy = (int) (y / width);
-
+			
+			/*
+			 * Berechnen des Bereiches, welcher maximal untersucht werden muss.
+			 * Dazu wird ein Quadrat angenommen, welches den Kreis genau einschließt
+			 * (d.h. die Seitenlängen gleich dem Durchmesser des Kreises sind), damit nicht jede
+			 * Zelle des Gitters untersucht werden muss, sondern nur Zellen, welche sich in diesem
+			 * Quadrat befinden.
+			 */
 			int minX = (int) ((x - brushRadius) / width);
 			int minY = (int) ((y - brushRadius) / width);
 
 			int maxX = (int) ((x + brushRadius) / width);
 			int maxY = (int) ((y + brushRadius) / width);
-
+			
+			// Grenzfälle, wenn Teil des Quadrats über Grenzen des Gitters hinaus gehen würde
 			if (minX < 0)
 				minX = 0;
 
@@ -629,6 +654,7 @@ public class NoiseController implements Initializable {
 			if (maxY > grid.getAmountY() - 1)
 				maxY = grid.getAmountY() - 1;
 
+			// Untersuche jede Zelle des Quadrates
 			for (int sx = minX; sx <= maxX; sx++) {
 
 				for (int sy = minY; sy <= maxY; sy++) {
@@ -636,17 +662,27 @@ public class NoiseController implements Initializable {
 					double dx = sx - ix;
 					double dy = sy - iy;
 
+					// Überprüfe, ob Zelle in Kreis liegt.
 					if (dx * dx + dy * dy <= r * r) {
-
+						
+						// Wenn ja, berechne einen Wert, für die Stelle des Gitters
 						double val = (dist(sx, sy, ix, iy) * brushStrength) / r;
 
 						y = grid.getAmountY() - sy - 1;
-
+						
 						if (e.getButton().equals(MouseButton.PRIMARY)) {
-
+							
+							/*
+							 * Wenn die linke Maustaste betätigt wurde, wird der berechnete Wert zu dem 
+							 * bestehenden Wert im Gitter (an dieser Stelle) addiert.
+							 */
 							grid.setVal(sx, (int) y, grid.getVal(sx, (int) y) + 0.5 * (brushStrength - val));
 
 						} else
+							/*
+							 * Wenn eine andere Maustaste betätigt wurde, wird der berechnete Wert von dem
+							 * bestehenden Wert im Gitter (an dieser Stelle) subtrahiert.
+							 */
 							grid.setVal(sx, (int) y, grid.getVal(sx, (int) y) - 0.5 * (brushStrength - val));
 
 					}
@@ -677,41 +713,62 @@ public class NoiseController implements Initializable {
 
 	}
 
+	/**
+	 * Diese Funktion dient dem Generieren des Gitters aus Dreiecken 
+	 * für dieses Noise-Objekt. Zudem wird die von dem MainController aktuell
+	 * ausgewählte Szene neu gerendert.
+	 * Diese Funktion wird dazu verwendet, wenn z.B. sich die Werte des Gitters
+	 * oder der Noise-Funktionen ändern und diese Änderungen sofort dargestellt
+	 * werden sollen.
+	 */
 	protected void generatePolyMesh() {
 
 		noiseShape.generatePolyMesh(colorCheck.isSelected());
 		MainController.renderMain();
 
 	}
-
+	
 	/**
-	 * fills grid without generating new noise
+	 * Diese Funktion dient zur Berechnung der einzelnen Werte für die
+	 * einzelnen Zellen des Gitters (z.B. für die Heightmap). Zudem
+	 * werden wird das Gitter (Heightmap) neu gezeichnet.
 	 */
 	protected void fillGrid() {
-
+		
+		/*
+		 * Aktuelle Zeichnungen auf der Zeichenfläche im Bereich der zu zeichnenden Fläche löschen.
+		 * Es können sonst Artefakte der vorherigen Zeichnungen bestehen bleiben.
+		 */
 		gc.clearRect(0, 0, canvasPane.getWidth(), canvasPane.getHeight());
 
+		/*
+		 * Gehe durch jede Zelle des Gitters, um diese
+		 * anschließend mit einem Wert zu füllen. 
+		 */
 		for (int x = 0; x < grid.getAmountX(); x++) {
 			for (int y = 0; y < grid.getAmountY(); y++) {
-
-				// double sum = noise.realNoise(x, y);
-
+				
+				// sum - Wert, welcher in die aktuelle Zelle eingetragen wird
 				double sum = 0;
 
+				// Muss Maske berücksichtigt werden?
 				if (maskCheck.isSelected()) {
-
+					
+					// Wenn ja, muss der Wert von der Maske berücksichtigt werden
 					sum = maskNoise.realNoise(x, y);
 
 					
-					if(sum > 0) {
-						
+					if(sum > 0)
+						/*
+						 * Wird eine Maske verwendet, sind nur positive Werte der "normalen" Noise-Funktion
+						 * erwünscht.
+						 */
 						sum *= Math.sqrt(noise.realNoise(x, y) * noise.realNoise(x, y));
-						
-					}
 					
 				} else
 					sum = noise.realNoise(x, y);
 
+				// Wert an die Grenzwerte anpassen
 				if (sum > noiseShape.getMaxHeight())
 					sum = noiseShape.getMaxHeight()
 							+ noise.realNoise(x, y) / (noise.getAmplitude() * noise.getOctaves() * 5);
@@ -719,9 +776,11 @@ public class NoiseController implements Initializable {
 				if (sum < noiseShape.getMinHeight())
 					sum = noiseShape.getMinHeight()
 							- -noise.realNoise(x, y) / (noise.getAmplitude() * noise.getOctaves() * 5);
-
+				
+				// Wert in das Gitter eintragen
 				grid.setVal(x, y, sum);
 
+				// Zelle auf die Zeichenfläche zeichnen
 				if (colorCheck.isSelected()) {
 					gc.setFill(noise.getNoiseRGB(sum));
 				} else {
@@ -736,17 +795,26 @@ public class NoiseController implements Initializable {
 	}
 
 	/**
-	 * fills grid without generating new noise
+	 * Diese Funktion zeichnet das Gitter dieses Noise-Objektes neu.
+	 * Die Werte des Gitters bleiben dabei unverändert.
 	 * 
-	 * @param noise
-	 * @param grid
-	 * @param gc
-	 * @param noiseShape
+	 * @param noise			NoiseFunktion
+	 * @param grid			Gitter
+	 * @param gc			GraphicsContext von der Zeichenfläche
+	 * @param noiseShape	Noise-Objekt (RenNoise)
 	 */
 	private void fillGridRaw(NoiseGenerator2D noise, ResGrid grid, GraphicsContext gc, RenNoise noiseShape) {
 
+		/*
+		 * Aktuelle Zeichnungen auf der Zeichenfläche im Bereich der zu zeichnenden Fläche löschen.
+		 * Es können sonst Artefakte der vorherigen Zeichnungen bestehen bleiben.
+		 */
 		gc.clearRect(0, 0, canvasPane.getWidth(), canvasPane.getHeight());
 
+		/*
+		 * Gehe durch jede Zelle des Gitters, um diese
+		 * zu zeichnen.
+		 */
 		for (int x = 0; x < grid.getAmountX(); x++) {
 			for (int y = 0; y < grid.getAmountY(); y++) {
 
@@ -771,6 +839,15 @@ public class NoiseController implements Initializable {
 
 	}
 
+	/**
+	 * Funktion, welche die Distanz zwischen zwei, 2D Punkten berechnet
+	 * 
+	 * @param x1	x-Koordinate von Punkt1
+	 * @param y1	y-Koordinate von Punkt1
+	 * @param x2	x-Koordiante von Punkt2
+	 * @param y2	y-Koordiante von Punkt2
+	 * @return Gibt die Distanz von zwei Punkten zu einander zurück.
+	 */
 	private double dist(double x1, double y1, double x2, double y2) {
 		return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 	}

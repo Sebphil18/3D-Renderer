@@ -12,9 +12,11 @@ public class RenScene {
 	private ObservableList<Point3D> lights;
 
 	/**
-	 * Constructs new RenScene:
-	 * 	A RenScene contains all objects placed in the 3D World including shapes, lights and the camera.
-	 * 	It also has an value of the ambient lighting (ambient).
+	 * Constructor für eine RenScene.
+	 * Erstellt eine Szene, welche als Container für Objekte, Lichter sowie einer Kamera darstellt.
+	 * Zudem kann die Stärke des Umgebungslichtes mit der Variable 'ambient' angepasst werden.
+	 * Bei dem Aufruf dieses Constructors wird zudem die Kamera automatisch erstellt.
+	 * 
 	 */
 	public RenScene() {
 		this.ambient = 0.05;

@@ -10,10 +10,31 @@ public class RenTriangle {
 	private Point3D[] vert;
 	private Color color = Color.WHITE;
 
+	/**
+	 * Constructor für ein RenTriangle.
+	 * 
+	 * Diese Klasse repräsentiert ein Dreieck mit seinen drei Eckpunkten
+	 * und einer Farbe.
+	 * 
+	 * @param v1	1. Eckpunkt des Dreieckes
+	 * @param v2	2. Eckpunkt des Dreieckes
+	 * @param v3	3. Eckpunkt des Dreieckes
+	 */
 	public RenTriangle(Point3D v1, Point3D v2, Point3D v3) {
 		vert = new Point3D[] { v1, v2, v3 };
 	}
-
+	
+	/**
+	 * Constructor für ein RenTriangle.
+	 * 
+	 * Diese Klasse repräsentiert ein Dreieck mit seinen drei Eckpunkten
+	 * und einer Farbe.
+	 * 
+	 * @param v1	1. Eckpunkt des Dreieckes
+	 * @param v2	2. Eckpunkt des Dreieckes
+	 * @param v3	3. Eckpunkt des Dreieckes
+	 * @param color	Farbe des Dreiecks
+	 */
 	public RenTriangle(Point3D v1, Point3D v2, Point3D v3, Color color) {
 		vert = new Point3D[] { v1, v2, v3 };
 		this.color = color;

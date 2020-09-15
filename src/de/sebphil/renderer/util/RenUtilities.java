@@ -11,37 +11,47 @@ import javafx.util.Duration;
 public class RenUtilities {
 
 	/**
-	 * checks if string is numeric (can be represented as a number-type)
-	 * @param arg - string to test
-	 * @param point - if set to true points are allowed; if set to false points are not allowed
-	 * @param e - if set to true e is allowed for representing numbers as x * 10^n
-	 * @return returns if arg can be represented as number
+	 * Diese Funktion kann verwendet werden, um zu überprüfen, ob eine Zeichenkette als Zahl dargestellt werden kann.
+	 * 
+	 * @param arg 	String, welcher geprüft werden soll
+	 * @param hasNoPoint wenn aktiviert (true) ist ein Punkt erlaubt; wenn deaktiviert (false) ist ein Punkt nicht erlaubt
+	 * @param e 	wenn aktiviert (true) sind e-Ausdrücke erlaubt; wenn deaktiviert (false) ist dies nicht erlaubt
+	 * @return returns Wahr (true), wenn Eingabe-String als Zahl dargestellt werden kann, Falsch (false) wenn nicht.
 	 */
-	public static boolean isNumeric(String arg, boolean point, boolean e) {
+	public static boolean isNumeric(String arg, boolean hasNoPoint, boolean e) {
 
+		// Die Zeichenkette ist leer oder es wurde das Vorzeichen falsch gesetzt.
 		if (arg.isEmpty())
 			return false;
 		if ((arg.contains("+") && !arg.startsWith("+")) || (arg.contains("-") && !arg.startsWith("-"))) {
 			return false;
 		}
 
-		char[] chars = arg.toCharArray();
-
+		char[] chars = arg.toUpperCase().toCharArray();
+		
+		// Wenn die Zeichenkette nur aus einem Buchstabe besteht, kann die Methode Character.isDigit verwendet werden.
 		if (chars.length == 1) {
 			if (!Character.isDigit(chars[0]))
 				return false;
 		}
-
+		
 		for (char c : chars) {
-
+			
+			// Wenn der aktuelle Buchstabe keinen Zahl oder Vorzeichen ist
 			if (!Character.isDigit(c) && c != '-' && c != '+') {
-				if (point && c == '.') {
-					point = false;
+				
+					// Der aktuelle Buchstabe stellt einen Punkt dar.
+				if (hasNoPoint && c == '.') {
+					hasNoPoint = false;
 					continue;
+					
+					// Es wird ein valider E-Ausdruck verwendet
 				} else if (e && c == 'E' && !arg.endsWith("E")) {
 					e = false;
 					continue;
 				}
+				
+				// Die zuvor geprüften Kriterien können nicht erfüllt werden. -> Zeichenkette ist ungültig.
 				return false;
 			}
 		}
@@ -50,20 +60,24 @@ public class RenUtilities {
 	}
 
 	/**
-	 * multiplies a vector with a vector
-	 * @param vec1 - vector1
-	 * @param vec2 - vectpr2
-	 * @return returns new vector
+	 * Multipliziert die Werte eines Vektors mit den Werten eines anderen.
+	 * 
+	 * @param vec1 Vektor1 (bzw. Punkt1)
+	 * @param vec2 Vektor2 (bzw. Punkt2)
+	 * @return returns Gibt das Ergebnis dieser Multiplikation als 
+	 * neuen Vektor (bzw. Punkt) zurück.
 	 */
 	public static Point3D multVecVec(Point3D vec1, Point3D vec2) {
 		return new Point3D(vec1.getX() * vec2.getX(), vec1.getY() * vec2.getY(), vec1.getZ() * vec2.getZ());
 	}
 
 	/**
-	 * multiplies a matrix with a vector with result /= w
-	 * @param matrix
-	 * @param vector
-	 * @return returns new vector (Point3D)
+	 * Multipliziert einen Vektor mit einer 4x4 Matrix und teilt das Ergbeniss mit der w-Komponente.
+	 * Die w-Koordiante des Vektors wird als 1 angenommen.
+	 * 
+	 * @param matrix 4x4 Matrix
+	 * @param vector Vektor
+	 * @return returns Gibt das Ergebnis als neuen Vektor (bzw. Punkt) zurück.
 	 */
 	public static Point3D multMatVec(double[][] matrix, Point3D vector) {
 
@@ -89,10 +103,11 @@ public class RenUtilities {
 	}
 
 	/**
-	 * multiplies 2 matrices
-	 * @param m1 - matrix1
-	 * @param m2 - matrix2
-	 * @return returns matrix m3 = m1 * m2
+	 * Multipliziert zwei Matrizen.
+	 * 
+	 * @param m1 Matrix1
+	 * @param m2 Matrix2
+	 * @return Gibt das Ergebnis von m1 * m2 als neue Matrix zurück.
 	 */
 	public static double[][] multMatMat(double[][] m1, double[][] m2) {
 
@@ -114,9 +129,10 @@ public class RenUtilities {
 	}
 
 	/**
-	 * inverts lookAt-matrix
-	 * @param mat - lookAt-matrix
-	 * @return returns new, inverted lookAt-matrix
+	 * Invertiert die lookAt-Matrix.
+	 * 
+	 * @param mat lookAt-Matrix
+	 * @return Gibt die neue, invertierte lookAt-Matrix zurück.
 	 */
 	public static double[][] invertLookAtMat(double[][] mat) {
 
@@ -140,6 +156,13 @@ public class RenUtilities {
 		return result;
 	}
 
+	/**
+	 * Zeigt einen Fehler bei dem beschriebenen Etikett an.
+	 * 
+	 * @param errorMsg 	Fehler-Nachricht
+	 * @param error 	Etikett, welches den Fehler anzeigen soll
+	 * @param color 	Farbe der angezeigten Schrift
+	 */
 	public static void showErrorMessage(String errorMsg, Label error, Color color) {
 
 		error.setText(errorMsg);
@@ -153,7 +176,16 @@ public class RenUtilities {
 		timeline.play();
 
 	}
-
+	
+	/**
+	 * Verschiebt ein Gitter, welches als einfaches Array 
+	 * beschrieben wurde um eine Einheite nach "unten".
+	 * (Gitter kann auch als Tabelle beschrieben werden.)
+	 * 
+	 * @param array		Array, welches verschoben werden soll
+	 * @param width		Breite des Gitters
+	 * @param height	Höhe des Gitters
+	 */
 	public static void shiftArrDown(double[] array, int width, int height) {
 
 		for (int y = 0; y < height - 1; y++) {
@@ -167,7 +199,16 @@ public class RenUtilities {
 		}
 
 	}
-
+	
+	/**
+	 * Verschiebt ein Gitter, welches als einfaches Array 
+	 * beschrieben wurde um eine Einheite nach "oben".
+	 * (Gitter kann auch als Tabelle beschrieben werden.)
+	 * 
+	 * @param array		Array, welches verschoben werden soll
+	 * @param width		Breite des Gitters
+	 * @param height	Höhe des Gitters
+	 */
 	public static void shiftArrUp(double[] array, int width, int height) {
 
 		for (int y = height - 1; y > 0; --y) {
@@ -182,6 +223,12 @@ public class RenUtilities {
 
 	}
 	
+	/**
+	 * Gibt eine Matrix in Textform aus.
+	 * (Es wird der standardmäßige Outputstream verwendet.)
+	 * 
+	 * @param mat	Matrix, welche ausgegeben werden soll
+	 */
 	public static void printMat(double[][] mat) {
 		for(int i=0;i<mat.length;i++) {
 			for(int j=0;j<mat[0].length;j++) {

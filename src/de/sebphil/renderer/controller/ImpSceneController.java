@@ -31,6 +31,12 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 
+/**
+ * Diese Klasse wird für die Steuerung der Benutzeroberfläche verwendet.
+ * Sie steuert das Fenster, welches das Importieren von Szenen ermöglicht.
+ * Sie wird durch de/sebphil/renderer/fxml/ImpSceneWindow.fxml aufgerufen (bzw. ausgeführt).
+ */
+
 public class ImpSceneController implements Initializable {
 
 	@FXML
@@ -51,6 +57,11 @@ public class ImpSceneController implements Initializable {
 	private File file;
 	private Color errCol = Color.web("#ff6f6f");
 
+	/**
+	 * Initialisiert diesen Kontroller.
+	 * Dabei werden die Listener für die Steuerelemente (Textfelder, Knöpfe, etc.)
+	 * initilisiert.
+	 */
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 
@@ -72,7 +83,11 @@ public class ImpSceneController implements Initializable {
 		});
 
 	}
-
+	
+	/**
+	 * Öffnet den Filebrowser, um den Speicherort der zu importierenden Datei zu bestimmen.
+	 * Sollte kein Speicherort ausgewählt werden, wird die Funktion abbrechen.
+	 */
 	@FXML
 	public void browse() {
 
@@ -91,20 +106,31 @@ public class ImpSceneController implements Initializable {
 
 	}
 
+	/**
+	 * Importiert die ausgewählte Szene.
+	 * Es wird dabei keine neue Szene erstellt, sondern der aktuellen
+	 * Szene, welche im MainController ausgewählt ist, angefügt.
+	 * Diese Funktion schließt zudem das aktuelle Fenster, welches für das Importieren
+	 * einer Szene zuständig ist.
+	 */
 	@FXML
 	public void importScene() {
 
 		RenScene mainScene = MainController.mainScene;
 
 		if (file != null) {
-
+			
+			// Liste der in der Szene enthaltenen Objekte
 			List<RenObject> objects = getObjects(file);
 
+			// Füge die einzelnen Objekte der Szene hinzu.
 			for (RenObject renObj : objects) {
-
+				
+				// Figuren werden in die Liste 'shapes' hinzugefügt.
 				if (renObj instanceof RenShape)
 					mainScene.getShapes().add((RenShape) renObj);
 				else {
+					// Lichter werden in die Liste 'lights' hinzugefügt.
 					mainScene.getLights().add(renObj.getPosition());
 					MainController.lightItem.getChildren()
 							.add(new TreeItem<RenObjItem>(new RenObjItem(renObj.getName(), renObj)));
@@ -119,30 +145,43 @@ public class ImpSceneController implements Initializable {
 
 	}
 
+	/**
+	 * Diese Funktion soll die einzelnen Objekte einer Szene auslesen und zurückgeben.
+	 * 
+	 * @param file Dateipfad zu der Datei, welche als Szene importiert werden soll (Datei muss ein ZIP-Archiv sein)
+	 * @return Gibt eine Liste aller Objekte der ausgewählten Szene zurück
+	 */
 	public List<RenObject> getObjects(File file) {
 
 		progressBar.setProgress(-1);
-
-		List<RenObject> shapes = new ArrayList<RenObject>();
+		
+		// Erstelle eine Liste für alle Objekte, welche in der ausgewählten Szene enthalten sind.
+		List<RenObject> objects = new ArrayList<RenObject>();
 
 		try {
-
+			
 			ZipFile zipFile = new ZipFile(file);
 
 			final Enumeration<? extends ZipEntry> entries = zipFile.entries();
-
+			
+			// Gehe durch alle Einträge des ZIP-Archivs
 			while (entries.hasMoreElements()) {
 
 				ZipEntry entry = entries.nextElement();
 
 				Scanner scanner = new Scanner(zipFile.getInputStream(entry));
-
+				
+				// Wenn es sich bei dem aktuellen Eintrag, um eine Datei für eine Figur handelt
 				if (entry.getName().endsWith(".shp")) {
 
 					RenShape shape = new RenShape(entry.getName());
 
 					Color color = null;
-
+					
+					/*
+					 * Ermitteln der Eigenschaften der aktuellen Figur
+					 * (Position, Größe, Rotation und Farbe)
+					 */
 					try {
 
 						shape.setPosition(
@@ -171,7 +210,11 @@ public class ImpSceneController implements Initializable {
 					double minX;
 					double minY;
 					double minZ;
-
+					
+					/*
+					 * Ermittle die Dreiecke, welche in der Datei enthalten sind 
+					 * und füge diese der aktuellen Figur hinzu.
+					 */
 					while (scanner.hasNextDouble()) {
 
 						maxX = shape.getMaxX();
@@ -183,13 +226,16 @@ public class ImpSceneController implements Initializable {
 						minZ = shape.getMinZ();
 
 						try {
-
+							
+							// Ermittle die Koordianten der Eckpunkte des aktuellen Dreiecks.
 							Point3D v1 = new Point3D(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
 							Point3D v2 = new Point3D(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
 							Point3D v3 = new Point3D(scanner.nextDouble(), scanner.nextDouble(), scanner.nextDouble());
-
+							
+							// Füge das aktuelle Dreieck zu der aktuellen Figur hinzu.
 							shape.getPolys().add(new RenTriangle(v1, v2, v3));
-
+							
+							// Passe die Grenzwerte für die Figur geg. Falls an.
 							for (Point3D v : shape.getPolys().get(shape.getPolys().size() - 1).getVert()) {
 
 								if (v.getX() > maxX)
@@ -217,13 +263,16 @@ public class ImpSceneController implements Initializable {
 						}
 
 					}
-
+					
 					shape.setColor(color);
-
-					shapes.add(shape);
+					
+					// aktuelle Figur zu der Liste für die Objekte hinzufügen.
+					objects.add(shape);
 
 				} else if (entry.getName().endsWith(".ligh")) {
-
+					// Wenn es sich bei dem aktuellen Eintrag um eine Lichtquelle handelt.
+					
+					// Ermittle alle Lichtquellen und trage diese in die Liste für alle Objekte ein.
 					while (scanner.hasNextDouble()) {
 
 						RenObject renObj = new RenObject(entry.getName());
@@ -241,7 +290,7 @@ public class ImpSceneController implements Initializable {
 							continue;
 						}
 
-						shapes.add(renObj);
+						objects.add(renObj);
 
 					}
 
@@ -261,7 +310,7 @@ public class ImpSceneController implements Initializable {
 
 		progressBar.setProgress(0);
 
-		return shapes;
+		return objects;
 
 	}
 

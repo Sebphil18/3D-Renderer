@@ -2,8 +2,13 @@ package de.sebphil.renderer.uicontrol;
 
 import javafx.scene.control.TreeCell;
 
-public class CustomTreeCell extends TreeCell<RenObjItem> {
+/**
+ * Diese Klasse dient der Steuerung, der Benutzeroberfläche.
+ * Sie wird für das Darstellen der einzelnen RenObjects in der TreeView benötigt.
+ */
 
+public class CustomTreeCell extends TreeCell<RenObjItem> {
+	
 	@Override
 	protected void updateItem(RenObjItem objItem, boolean empty) {
 		// TODO Auto-generated method stub

@@ -2,6 +2,10 @@ package de.sebphil.renderer.uicontrol;
 
 import de.sebphil.renderer.objects.RenObject;
 
+/**
+ * 	Dise Klasse dient der Steuerung der Benutzeroberfläche.
+ *	Sie ist für die Lagerung eines RenObject in der TreeView nötig.
+ */
 public class RenObjItem {
 
 	private String name;

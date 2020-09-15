@@ -45,7 +45,6 @@
       <Label id="text2" layoutX="22.0" layoutY="299.0" text="Seed:" />
       <TextField id="numField" fx:id="seedField" layoutX="156.0" layoutY="295.0" prefHeight="26.0" prefWidth="77.0" promptText="number" text="1" />
       <CheckBox fx:id="colorCheck" layoutX="495.0" layoutY="52.0" mnemonicParsing="false" text="color height" />
-      <CheckBox fx:id="dynamicCheck" layoutX="593.0" layoutY="52.0" mnemonicParsing="false" text="dynamic" />
       <Slider fx:id="maxHeightSlider" layoutX="58.0" layoutY="353.0" max="200.0" prefHeight="12.0" prefWidth="200.0" value="100.0" />
       <TextField id="valField" fx:id="maxHeightMinField" alignment="CENTER_RIGHT" layoutX="13.0" layoutY="346.0" prefHeight="26.0" prefWidth="45.0" promptText="min" />
       <TextField id="valField" fx:id="maxHeightMaxField" layoutX="260.0" layoutY="346.0" prefHeight="26.0" prefWidth="76.0" promptText="max" />

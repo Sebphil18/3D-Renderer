@@ -17,6 +17,14 @@ public class RenShape extends RenObject {
 	private Color color;
 	private List<RenTriangle> polys;
 
+	/**
+	 * Constructor für ein RenShape.
+	 * 
+	 * Diese Klasse erbt von der Klasse RenObject.
+	 * @see de.sebphil.renderer.objects.RenObject
+	 * 
+	 * @param name	Name des zu erzeugenden Objektes
+	 */
 	public RenShape(String name) {
 		super(name);
 		this.color = Color.WHITE;
@@ -25,6 +33,15 @@ public class RenShape extends RenObject {
 		this.size = new Point3D(1, 1, 1);
 	}
 
+	/**
+	 * Constructor für ein RenShape.
+	 * 
+	 * Diese Klasse erbt von der Klasse RenObject.
+	 * @see de.sebphil.renderer.objects.RenObject
+	 * 
+	 * @param name	Name des zu erzeugenden Objektes
+	 * @param color	Farbe, welche das gesamte Objekt haben wird
+	 */
 	public RenShape(String name, Color color) {
 		super(name);
 		this.color = color;
@@ -34,8 +51,9 @@ public class RenShape extends RenObject {
 	}
 
 	/**
-	 * copies this opject
-	 * @return returns a copy of this object with new uuid and this.name + "Copy"
+	 * Erstellt eine neue Kopie dieser Instanz mit einer neuen UUID und dem Namen: name + "Copy".
+	 * 
+	 * @return Kopie dieser Instanz
 	 */
 	public RenShape copy() {
 
@@ -63,37 +81,53 @@ public class RenShape extends RenObject {
 	}
 
 	/**
-	 * imports an OBJ file
-	 * @param file - .obj file
+	 * Lädt einer einfachen Datei des Formates Wavefront (.obj) und lädt die Vertexdaten in diese Instanz.
+	 * 
+	 * @param file Datei, welche geladen werden soll
 	 */
 	public void importObj(File file) {
-
-		List<Point3D> vertecies = new ArrayList<Point3D>();
+		
+		/*
+		 * vertices - Liste für die Koordinaten der einzelnen Eckpunkte
+		 * impPolys - Liste für die Dreiecke, welche sich aus den Eckpunkten ergeben
+		 */
+		List<Point3D> vertices = new ArrayList<Point3D>();
 		List<RenTriangle> impPolys = new ArrayList<RenTriangle>();
 
 		try {
+			
 			Scanner scanner = new Scanner(file);
 
+			/*
+			 * Ermittle jede Zeile mit einem "v" oder "f" am Anfang und trage
+			 * dementsprechend ein neuen Eckpunkt oder ein neues Dreieck in die
+			 * jeweilige Liste ein.
+			 */
 			while (scanner.hasNextLine()) {
 
 				String line = scanner.nextLine();
 
 				if (line.startsWith("v")) {
-
+					
+					//Trage einen neuen Eckpunkt in die Liste vertices ein.
+					
 					String[] args = line.split(" ");
-
-					vertecies.add(
+					
+					vertices.add(
 							new Point3D(Double.valueOf(args[1]), Double.valueOf(args[2]), Double.valueOf(args[3])));
 
 				} else if (line.startsWith("f")) {
-
+					
+					//Trage ein neues Dreieck in die Liste impPolys ein.
+					
 					String[] args = line.split(" ");
 
-					RenTriangle tri = new RenTriangle(vertecies.get(Integer.valueOf(args[1]) - 1),
-							vertecies.get(Integer.valueOf(args[2]) - 1), vertecies.get(Integer.valueOf(args[3]) - 1));
+					RenTriangle tri = new RenTriangle(vertices.get(Integer.valueOf(args[1]) - 1),
+							vertices.get(Integer.valueOf(args[2]) - 1), vertices.get(Integer.valueOf(args[3]) - 1));
 
 					impPolys.add(tri);
-
+					
+					//Aktualisiere die Maximalwerte des Objektes, wenn nötig.
 					for (int i = 0; i < 3; i++) {
 
 						Point3D v = tri.getVert()[i];
@@ -121,13 +155,15 @@ public class RenShape extends RenObject {
 			e.printStackTrace();
 		}
 
+		//Füge alle importierten Dreiecke zu diesem RenShape hinzu.
 		this.polys.addAll(impPolys);
 	}
 	
 	/**
-	 * generates new size-matrix
-	 * @param size - size of shape
-	 * @return returns size-matrix
+	 * Generiert eine neue Skalierungsmatrix.
+	 * 
+	 * @param size	Skalierung
+	 * @return		Gibt eine neue Skalierungsmatrix mit der angegebenen Skalierung zurück
 	 */
 	protected static double[][] generateSizeMat(Point3D size) {
 		double[][] sizeMat = new double[4][4];
@@ -139,9 +175,10 @@ public class RenShape extends RenObject {
 	}
 
 	/**
-	 * generates new translation-matrix
-	 * @param translation - translation of object
-	 * @return returns new translation-matrix
+	 * Generiert eine neue Translationsmatrix.
+	 * 
+	 * @param translation	Translation
+	 * @return				Gibt eine neue Trabslationsmatrix zurück mit der angegebenen Translation
 	 */
 	protected static double[][] generateTransMat(Point3D translation) {
 		double[][] transMat = new double[4][4];
@@ -156,9 +193,10 @@ public class RenShape extends RenObject {
 	}
 
 	/**
-	 * generates new world-matrix
-	 * @param shape - RenShape to generate the world-matrix from
-	 * @return returns new world-matrix of shape
+	 * Generiert eine neue "Welt"-Matrix (Worldmatrix / Modelmatrix)
+	 * 
+	 * @param shape	RenShape, von welchem die "Welt"-Matrix erstellt werden soll
+	 * @return		Gibt die "Welt"-Matrix des angegebenen RenShape zurück.
 	 */
 	protected static double[][] generateWorldMat(RenShape shape) {
 		
@@ -177,7 +215,13 @@ public class RenShape extends RenObject {
 	public Color getColor() {
 		return color;
 	}
-
+	
+	/**
+	 * Legt die Farbe dieses Objektes fest.
+	 * (Legt die Farbe von allen Dreiecken, welche sich zur Zeit in der Liste "polys" befinden, fest.)
+	 * 
+	 * @param color Farbe
+	 */
 	public void setColor(Color color) {
 		this.color = color;
 		for (RenTriangle tri : getPolys()) {

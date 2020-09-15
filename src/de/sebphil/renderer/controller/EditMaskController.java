@@ -9,6 +9,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
 
+/**
+ * Diese Klasse stellt den Kontroller dar, welcher für die Steuerung des Fenster
+ * verantworlich ist, welches das Editieren der Maske im Noise-Menu ermöglicht.
+ * Somit kann die Maske eines ausgewählten Noise-Objektes leicht bearbeitet werden.
+ * Sie wird durch de/sebphil/renderer/fxml/EditMaskWindow.fxml aufgerufen (bzw. ausgeführt).
+ */
 public class EditMaskController implements Initializable{
 
 	@FXML
@@ -29,6 +35,11 @@ public class EditMaskController implements Initializable{
 	private NoiseGenerator2D maskNoise;
 	private NoiseController noiseController;
 	
+	/**
+	 * Diese Methode initialisiert diesen Kontroller.
+	 * Dabei werden die Listener für die einzelnen Steuerelemente (Textfelder, Knöpfe, etc.)
+	 * initilisiert.
+	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		
@@ -108,11 +119,11 @@ public class EditMaskController implements Initializable{
 		});
 		
 	}
-
+	
 	public NoiseGenerator2D getMaskNoise() {
 		return maskNoise;
 	}
-
+	
 	public void setMaskNoise(NoiseGenerator2D maskNoise) {
 		this.maskNoise = maskNoise;
 		
