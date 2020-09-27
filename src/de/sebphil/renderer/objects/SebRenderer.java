@@ -68,7 +68,7 @@ public class SebRenderer {
 	 * @see de.sebphil.renderer.objects.SebRenderer#draw(PixelWriter) draw
 	 * )
 	 * 
-	 * @param scene	Szene, welcher gerendert werden soll
+	 * @param scene	Szene, welche gerendert werden soll
 	 */
 	public void update(RenScene scene) {
 		
@@ -97,7 +97,6 @@ public class SebRenderer {
 				Point3D[] vert = tri.getVert();
 
 				// Eckpuntke in World-Space transformieren
-
 				for (int i = 0; i < vert.length; i++) {
 
 					vert[i] = RenUtilities.multMatVec(worldMat, vert[i]);
@@ -106,7 +105,6 @@ public class SebRenderer {
 				}
 				
 				// Flächen-Normale des aktuellen Dreieckes ermitteln
-				
 				Point3D line1 = new Point3D(vert[1].getX() - vert[0].getX(), vert[1].getY() - vert[0].getY(),
 						vert[1].getZ() - vert[0].getZ());
 				Point3D line2 = new Point3D(vert[2].getX() - vert[0].getX(), vert[2].getY() - vert[0].getY(),
@@ -115,18 +113,15 @@ public class SebRenderer {
 				Point3D normal = line1.crossProduct(line2).normalize();
 				
 				// Face-Culling
-				
 				double dot = normal.dotProduct(vert[0].subtract(camera.getPosition()));
 
 				if (dot < 0) {
 
 					// Eckpunkte des aktuellen Dreieckes in View-Space transformieren
-
 					for (int i = 0; i < vert.length; i++) 
 						vert[i] = RenUtilities.multMatVec(camView, vert[i]);
 					
 					// Eckpunkte des aktuellen Dreieckes gegen die near Clipping-Ebene clippen
-					
 					RenTriangle[] triangles = clipToPlane(new Point3D(0, 0, 0.5+near), new Point3D(0, 0, 1), vert,
 							tri.getColor());
 					
@@ -145,12 +140,10 @@ public class SebRenderer {
 						 * sofort in den NDC-Space mithilfe der Funktion 'multMatVec'.
 						 * View-Space -> (Clip-Space) -> NDC-Space
 						 */
-
 						for (int i = 0; i < projVert.length; i++)
 							projVert[i] = RenUtilities.multMatVec(projMat, projVert[i]);
 						
 						// Das aktuelle Dreieck wird nun gegen alle restliche Clipping-Ebenen geclippt.
-						
 						Color color2 = projTri.getColor();
 						List<RenTriangle> clipTriangles = new ArrayList<RenTriangle>();
 						
@@ -250,7 +243,6 @@ public class SebRenderer {
 							Color color = new Color(r, g, b, o);
 							
 							// Aktuelles Dreieck rasterieren
-							
 							rasterizeTri(triClip.getVert(), color);
 						}
 

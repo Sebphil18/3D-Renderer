@@ -156,7 +156,7 @@ public class MainController implements Initializable {
 		
 		addObject(lightItem, light);
 		
-		// Definiert Listener für Eigenschaften der Hauptzeichenfläche und des Hauptrenderers
+		// Definiert einen Listener für Eigenschaften der Hauptzeichenfläche und des Hauptrenderers
 		widthProp.addListener(l -> {
 
 			widthLabel.setText(Double.toString(widthProp.doubleValue()));
@@ -336,7 +336,6 @@ public class MainController implements Initializable {
 			
 			/*
 			 * Rotiere die Kamera in Abhängigkeit zu der Positionsänderung des Cursors.
-			 * Dies ermöglicht das Umschauen mit der Maus.
 			 */
 			cam.setYaw(cam.getYaw() + x * 0.25);
 			cam.setPitch(cam.getPitch() + -(y * 0.25));
@@ -439,11 +438,11 @@ public class MainController implements Initializable {
 						// Unterscheidung, ob das aktuelle Objekt ein Noise-Objekt ist oder nicht
 						if (selectedObj instanceof RenNoise) {
 							
-							// laden Optionen für dieses Noise-Objekt
+							// lade Optionen für dieses Noise-Objekt
 							loadNoiseOptions((RenNoise) selectedObj, optionsBox);
 						} else {
 							
-							// laden Optionen für diese Figur
+							// lade Optionen für diese Figur
 							loadShapeOptions((RenShape) selectedObj, optionsBox, mainWriter);
 						}
 						
@@ -1419,86 +1418,5 @@ public class MainController implements Initializable {
 		return stage;
 
 	}
-	
-	/*
-	 * "Bewegt" die Noise-Funktion eines NoiseObjektes
-	 */
-	/*
-	private void moveNoisesDown() {
-
-		Point3D pos = mainScene.getCamera().getPosition();
-		Point3D lookDir = mainScene.getCamera().getLookDir();
-
-		for (RenShape shape : mainScene.getShapes()) {
-
-			if (shape instanceof RenNoise) {
-
-				RenNoise noiseShape = (RenNoise) shape;
-				NoiseGenerator2D noise = noiseShape.getNoise();
-
-				if (noiseShape.isDynamic()) {
-
-					ResGrid grid = noiseShape.getGrid();
-
-					pos = new Point3D(pos.getX(), pos.getY(), pos.getZ() - grid.getAmountY() / 2);
-					noiseShape.setPosition(RenUtilities.multVecVec(pos, new Point3D(1, 0, 1)));
-
-					if (lookDir.getZ() > 0) {
-
-						noiseShape.setOffsetY(noiseShape.getOffsetY() + 1);
-						RenUtilities.shiftArrDown(grid.getGrid(), grid.getAmountX(), grid.getAmountY());
-
-						double yoff = (grid.getAmountY() - 1) + noiseShape.getOffsetY();
-
-						for (int x = 0; x < grid.getAmountX(); x++) {
-
-							double sum = noiseShape.getNoise().realNoise(x, yoff);
-							if (sum > noiseShape.getMaxHeight())
-								sum = noiseShape.getMaxHeight()
-										+ noise.realNoise(x, yoff) / (noise.getAmplitude() * noise.getOctaves() * 5);
-
-							if (sum < noiseShape.getMinHeight())
-								sum = noiseShape.getMinHeight()
-										- -noise.realNoise(x, yoff) / (noise.getAmplitude() * noise.getOctaves() * 5);
-
-							grid.setVal(x, grid.getAmountY() - 1, sum);
-
-						}
-
-					} else {
-
-						noiseShape.setOffsetY(noiseShape.getOffsetY() - 1);
-						RenUtilities.shiftArrUp(grid.getGrid(), grid.getAmountX(), grid.getAmountY());
-
-						double yoff = (grid.getAmountY() - 1) + noiseShape.getOffsetY();
-						double y = yoff - grid.getAmountY();
-
-						for (int x = 0; x < grid.getAmountX(); x++) {
-
-							double sum = noiseShape.getNoise().realNoise(x, y);
-							if (sum > noiseShape.getMaxHeight())
-								sum = noiseShape.getMaxHeight()
-										+ noise.realNoise(x, y) / (noise.getAmplitude() * noise.getOctaves() * 5);
-
-							if (sum < noiseShape.getMinHeight())
-								sum = noiseShape.getMinHeight()
-										- -noise.realNoise(x, y) / (noise.getAmplitude() * noise.getOctaves() * 5);
-
-							grid.setVal(x, 0, sum);
-
-						}
-
-					}
-
-					noiseShape.generatePolyMesh(true);
-
-				}
-
-			}
-
-		}
-
-	}
-	*/
 
 }

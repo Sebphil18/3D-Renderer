@@ -23,8 +23,9 @@ public class Main extends Application {
 	}
 
 	/**
-	 * Funktion, welche beim Start der JavaFX-Anwendung ausgefÃ¼hrt wird.
-	 * In diesem Falle erstellt die Funktion das Hauptfenster und lÃ¤dt die dafÃ¼r zustÃ¤ndigen Ressourcen:
+	 * Funktion, welche beim Start der JavaFX-Anwendung ausgeführt wird.
+	 * In diesem Falle erstellt die Funktion das Hauptfenster und lädt die dafür zuständigen Ressourcen:
+	 * 
 	 * <p>
 	 * <ul>
 	 * <li>	de.sebphil.renderer.fxml.MainWindow.fxml
@@ -36,7 +37,7 @@ public class Main extends Application {
 
 		BorderPane root = new BorderPane();
 		
-		//	LÃ¤dt die FXML-Datei MainWindow.fxml, welche den strukturellen Aufbau des Hauptfensters bestimmt.
+		//	Lädt die FXML-Datei MainWindow.fxml, welche den strukturellen Aufbau des Hauptfensters bestimmt.
 		//	Zudem ruft diese Datei den Hauptkontroller (MainController) auf.
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/de/sebphil/renderer/fxml/MainWindow.fxml"));
 		root = loader.load();
